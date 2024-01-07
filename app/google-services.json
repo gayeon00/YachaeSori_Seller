@@ -1,45 +1,26 @@
 {
   "project_info": {
-    "project_number": "854224588828",
-    "firebase_url": "https://swimmer-f0505-default-rtdb.firebaseio.com",
-    "project_id": "swimmer-f0505",
-    "storage_bucket": "swimmer-f0505.appspot.com"
+    "project_number": "434344132531",
+    "project_id": "yachaesori-seller",
+    "storage_bucket": "yachaesori-seller.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:854224588828:android:95b9756110799afc4b8fd9",
+        "mobilesdk_app_id": "1:434344132531:android:3147ed3ef36c42ddd195c6",
         "android_client_info": {
           "package_name": "com.yachaesori.yachaesori_seller"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "854224588828-1log60u71tf02qnjl2r27riffla4sto0.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.yachaesori.yachaesori_seller",
-            "certificate_hash": "580f5f1507e8c9445f8ddefa82671bb3f8bd9c71"
-          }
-        },
-        {
-          "client_id": "854224588828-koatd0vf2seou36m00c0vj4t0u6kusmf.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBgEd74Xw7cXsFzNtpqOGQaMJ8NrJINp1k"
+          "current_key": "AIzaSyBHKOUoufNb6K9cWaG9KMdUksmVSM5EGmU"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "854224588828-koatd0vf2seou36m00c0vj4t0u6kusmf.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
