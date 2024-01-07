@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_nav_graph.xml"
+    app:startDestination="@id/item_home">
+
+    <fragment
+        android:id="@+id/item_home"
+        android:name="com.yachaesori.yachaesori_seller.ui.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_item_home_to_item_product_add"
+            app:destination="@id/item_product_add"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_item_home_to_item_guide"
+            app:destination="@id/item_guide"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/item_product_add"
+        android:name="com.yachaesori.yachaesori_seller.ui.product.ProductAddFragment"
+        android:label="fragment_product_add"
+        tools:layout="@layout/fragment_product_add" >
+        <action
+            android:id="@+id/action_item_product_add_to_item_product_option"
+            app:destination="@id/item_product_option"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/item_product_option"
+        android:name="com.yachaesori.yachaesori_seller.ui.product.ProductOptionFragment"
+        android:label="fragment_product_option"
+        tools:layout="@layout/fragment_product_option" >
+        <argument
+            android:name="product"
+            app:argType="com.yachaesori.yachaesori_seller.data.model.Product" />
+        <argument
+            android:name="imageArray"
+            app:argType="com.yachaesori.yachaesori_seller.data.model.Image[]" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/item_guide"
+        android:name="com.yachaesori.yachaesori_seller.ui.guide.GuideFragment"
+        android:label="fragment_guide"
+        tools:layout="@layout/fragment_guide" />
+
+    <fragment
+        android:id="@+id/item_mypage"
+        android:name="com.yachaesori.yachaesori_seller.ui.mypage.MypageFragment"
+        android:label="fragment_mypage"
+        tools:layout="@layout/fragment_mypage" />
+    <fragment
+        android:id="@+id/item_menu"
+        android:name="com.yachaesori.yachaesori_seller.ui.menu.MenuFragment"
+        android:label="fragment_menu"
+        tools:layout="@layout/fragment_menu" >
+        <action
+            android:id="@+id/action_item_menu_to_item_product_add"
+            app:destination="@id/item_product_add"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_item_menu_to_item_manage_order"
+            app:destination="@id/item_manage_order"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_item_menu_to_item_product_list"
+            app:destination="@id/item_product_list"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/item_manage_order"
+        android:name="com.yachaesori.yachaesori_seller.ui.order.OrderManageFragment"
+        android:label="fragment_order_manage"
+        tools:layout="@layout/fragment_order_manage" >
+        <action
+            android:id="@+id/action_item_manage_order_to_item_order_detail"
+            app:destination="@id/item_order_detail"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/item_order_detail"
+        android:name="com.yachaesori.yachaesori_seller.ui.order.OrderDetailFragment"
+        android:label="fragment_order_detail"
+        tools:layout="@layout/fragment_order_detail" >
+        <argument
+            android:name="order"
+            app:argType="com.yachaesori.yachaesori_seller.data.model.Order" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/item_product_list"
+        android:name="com.yachaesori.yachaesori_seller.ui.product.ProductListFragment"
+        android:label="fragment_product_list"
+        tools:layout="@layout/fragment_product_list">
+        <action
+            android:id="@+id/action_item_product_list_to_item_product_detail"
+            app:destination="@id/item_product_detail"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/item_product_detail"
+        android:name="com.yachaesori.yachaesori_seller.ui.product.ProductDetailFragment"
+        android:label="fragment_product_detail"
+        tools:layout="@layout/fragment_product_detail" >
+        <argument
+            android:name="productUid"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/label_height"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupReviewSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.gridlayout.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            app:columnCount="2"
+            app:orientation="horizontal">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip144cm"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_144cm_under"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip145cm"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_145_149cm"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip150cm"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_150_154cm"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip155cm"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_155_159cm"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip160cm"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_160_164cm"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip165cm"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_165_169cm"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip170cm"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_170_174cm"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip175m"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_175_179cm"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip180cm"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_180_184cm"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip185cm"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_185_189cm"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip190cm"
+                style="@style/Widget.Material3.Chip.Filter.Elevated"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/height_190cm_over"
+                android:textAlignment="center"
+                app:layout_columnWeight="1" />
+        </androidx.gridlayout.widget.GridLayout>
+
+    </com.google.android.material.chip.ChipGroup>
+
+
+</LinearLayout>

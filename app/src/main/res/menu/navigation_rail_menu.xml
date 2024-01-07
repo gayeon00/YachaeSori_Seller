@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/item_product"
+        android:title="@string/product_manage_subheader_title"
+        app:showAsAction="always|withText">
+<!--        <menu>
+            <item
+                android:id="@+id/item_product_add"
+                android:title="@string/add_product_title" />
+            <item
+                android:id="@+id/item_product_info"
+                android:title="@string/view_modify_product_title" />
+        </menu>-->
+    </item>
+    <item
+        android:id="@+id/item_order"
+        android:title="@string/manage_order_ship_title"
+        app:showAsAction="always|withText" />
+    <item
+        android:id="@+id/item_cs"
+        android:title="@string/cs_subheader_title"
+        app:showAsAction="always|withText">
+<!--        <menu>
+            <item
+                android:id="@+id/item_notice"
+                android:title="@string/manage_notice_title" />
+            <item
+                android:id="@+id/item_inq"
+                android:title="@string/manage_inquiry_title" />
+        </menu>-->
+    </item>
+    <item
+        android:id="@+id/item_setting"
+        android:title="@string/setting_title"
+        app:showAsAction="always|withText" />
+</menu>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.Material3.Chip.Assist.Elevated"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="태그"
+    android:textColor="@color/seed"
+    app:chipCornerRadius="20dp"
+    app:chipEndPadding="4dp"
+    app:chipIcon="@drawable/tag_20px"
+    app:textStartPadding="0dp">
+
+</com.google.android.material.chip.Chip>
