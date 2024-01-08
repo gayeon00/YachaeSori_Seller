@@ -40,7 +40,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:transitionGroup="true">
+                    android:transitionGroup="true"
+                    android:visibility="gone">
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
                         android:id="@+id/autoTextViewFilter"
@@ -57,9 +58,8 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textInputLayoutSort"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:transitionGroup="true">
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView

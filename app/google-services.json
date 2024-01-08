@@ -1,13 +1,33 @@
 {
   "project_info": {
-    "project_number": "434344132531",
-    "project_id": "yachaesori-seller",
-    "storage_bucket": "yachaesori-seller.appspot.com"
+    "project_number": "212699091185",
+    "firebase_url": "https://yachaesori-default-rtdb.firebaseio.com",
+    "project_id": "yachaesori",
+    "storage_bucket": "yachaesori.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:434344132531:android:3147ed3ef36c42ddd195c6",
+        "mobilesdk_app_id": "1:212699091185:android:817eb7f4994e9ad059d950",
+        "android_client_info": {
+          "package_name": "com.yachae.yachaesori"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzDUBt4B3oIAtlej80QW0RkZl8aP9XH8g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212699091185:android:da25b342797e6e8259d950",
         "android_client_info": {
           "package_name": "com.yachaesori.yachaesori_seller"
         }
@@ -15,7 +35,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBHKOUoufNb6K9cWaG9KMdUksmVSM5EGmU"
+          "current_key": "AIzaSyBzDUBt4B3oIAtlej80QW0RkZl8aP9XH8g"
         }
       ],
       "services": {

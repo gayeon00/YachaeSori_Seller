@@ -25,7 +25,7 @@ class ProductListFragment : Fragment() {
 
     private val fragmentProductListBinding get() = _fragmentProductListBinding!!
 
-    lateinit var filterArray: Array<String>
+    //    lateinit var filterArray: Array<String>
     private lateinit var sortArray: Array<String>
 
     override fun onCreateView(
@@ -38,15 +38,15 @@ class ProductListFragment : Fragment() {
 
         productViewModel.getAllProduct()
 
-        fragmentProductListBinding.run {
-            if (productViewModel.productList.value!!.isEmpty()) {
-                linearLayoutNoProduct.visibility = View.VISIBLE
-                recyclerViewProductList.visibility = View.GONE
-            } else {
-                linearLayoutNoProduct.visibility = View.GONE
-                recyclerViewProductList.visibility = View.VISIBLE
-            }
-        }
+//        fragmentProductListBinding.run {
+//            if (productViewModel.productList.value!!.isEmpty()) {
+//                linearLayoutNoProduct.visibility = View.VISIBLE
+//                recyclerViewProductList.visibility = View.GONE
+//            } else {
+//                linearLayoutNoProduct.visibility = View.GONE
+//                recyclerViewProductList.visibility = View.VISIBLE
+//            }
+//        }
 
         return fragmentProductListBinding.root
     }
@@ -55,42 +55,41 @@ class ProductListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 드롭다운 데이터셋
-        filterArray = resources.getStringArray(R.array.productFilter)
+//        filterArray = resources.getStringArray(R.array.productFilter)
         sortArray = resources.getStringArray(R.array.productSort)
 
-        productViewModel.run {
-            productList.observe(viewLifecycleOwner) {
-                fragmentProductListBinding.run {
-                    progressBarProductList.visibility = View.GONE
-                    if (it.isEmpty()) {
-                        linearLayoutNoProduct.visibility = View.VISIBLE
-                        recyclerViewProductList.visibility = View.GONE
-                    } else {
-                        linearLayoutNoProduct.visibility = View.GONE
-                        recyclerViewProductList.visibility = View.VISIBLE
+        productViewModel.productList.observe(viewLifecycleOwner) {
+            fragmentProductListBinding.run {
+                progressBarProductList.visibility = View.GONE
+                if (it.isEmpty()) {
+                    linearLayoutNoProduct.visibility = View.VISIBLE
+                    recyclerViewProductList.visibility = View.GONE
+                } else {
+                    linearLayoutNoProduct.visibility = View.GONE
+                    recyclerViewProductList.visibility = View.VISIBLE
 
-                        // productList 데이터가 변경되면 RecyclerView 베이스 데이터 새로 세팅
-                        recyclerViewProductList.run {
-                            adapter = ProductRecyclerViewAdapter(it)
-                            layoutManager = LinearLayoutManager(requireContext())
-                            addItemDecoration(
-                                MaterialDividerItemDecoration(
-                                    context,
-                                    MaterialDividerItemDecoration.VERTICAL
-                                )
+                    // productList 데이터가 변경되면 RecyclerView 베이스 데이터 새로 세팅
+                    recyclerViewProductList.run {
+                        adapter = ProductRecyclerViewAdapter(it)
+                        layoutManager = LinearLayoutManager(requireContext())
+                        addItemDecoration(
+                            MaterialDividerItemDecoration(
+                                context,
+                                MaterialDividerItemDecoration.VERTICAL
                             )
+                        )
 
-                            // 필터링, 정렬 리스트 유지
-                            autoTextViewFilter.setSimpleItems(filterArray)
-                            autoTextViewSort.setSimpleItems(sortArray)
+                        // 필터링, 정렬 리스트 유지
+//                            autoTextViewFilter.setSimpleItems(filterArray)
+                        autoTextViewSort.setSimpleItems(sortArray)
 
-                            // 상품 상세에서 백버튼으로 돌아올 때 필터링, 정렬 유지
-                            onFilterTextChanged()
-                            onSortTextChanged()
-                        }
+                        // 상품 상세에서 백버튼으로 돌아올 때 필터링, 정렬 유지
+//                            onFilterTextChanged()
+                        onSortTextChanged()
                     }
                 }
             }
+
         }
 
         fragmentProductListBinding.run {
@@ -114,15 +113,15 @@ class ProductListFragment : Fragment() {
                 )
             }
 
-            // 필터링
-            autoTextViewFilter.run {
-                autoTextViewFilter.setSimpleItems(filterArray)
-                addTextChangedListener {
-                    onFilterTextChanged()
-                    // 필터링으로 인해 바뀐 데이터 셋에 대해 기존 정렬 기준 다시 적용
-                    onSortTextChanged()
-                }
-            }
+//            // 필터링
+//            autoTextViewFilter.run {
+//                autoTextViewFilter.setSimpleItems(filterArray)
+//                addTextChangedListener {
+//                    onFilterTextChanged()
+//                    // 필터링으로 인해 바뀐 데이터 셋에 대해 기존 정렬 기준 다시 적용
+//                    onSortTextChanged()
+//                }
+//            }
 
             // 정렬
             autoTextViewSort.run {
@@ -132,13 +131,13 @@ class ProductListFragment : Fragment() {
         }
     }
 
-    private fun onFilterTextChanged() {
-        fragmentProductListBinding.run {
-            val selectedFilterItem = autoTextViewFilter.text.toString()
-            val recyclerViewAdapter = recyclerViewProductList.adapter as ProductRecyclerViewAdapter
-            recyclerViewAdapter.filter(selectedFilterItem)
-        }
-    }
+//    private fun onFilterTextChanged() {
+//        fragmentProductListBinding.run {
+//            val selectedFilterItem = autoTextViewFilter.text.toString()
+//            val recyclerViewAdapter = recyclerViewProductList.adapter as ProductRecyclerViewAdapter
+//            recyclerViewAdapter.filter(selectedFilterItem)
+//        }
+//    }
 
     private fun onSortTextChanged() {
         fragmentProductListBinding.run {
@@ -177,18 +176,20 @@ class ProductListFragment : Fragment() {
             ViewHolder(rowProductBinding.root) {
             val imageViewProduct = rowProductBinding.imageViewProduct
             val textViewName = rowProductBinding.textViewName
-            val textViewCategory = rowProductBinding.textViewCategory
+
+            //            val textViewCategory = rowProductBinding.textViewCategory
             val textViewRegDate = rowProductBinding.textViewRegDate
-            val textViewHashTag = rowProductBinding.textViewHashTag
+
+            //            val textViewHashTag = rowProductBinding.textViewHashTag
             val textViewPrice = rowProductBinding.textViewPrice
 
             init {
                 // 상품 상세 화면으로 이동
                 rowProductBinding.root.setOnClickListener {
-                    val productUid = filteredProductList[adapterPosition].productUid!!
+                    val productId = filteredProductList[adapterPosition].productId!!
                     val action =
                         ProductListFragmentDirections.actionItemProductListToItemProductDetail(
-                            productUid
+                            productId
                         )
                     findNavController().navigate(action)
                 }
@@ -211,21 +212,21 @@ class ProductListFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
             val product = filteredProductList[position]
-            val category = product.category!!
+//            val category = product.category!!
             // 다음 화면으로 넘겨줄 uid
             // holder.productUid = product.productUid.toString()
 
             // 서버로 부터 이미지를 내려받아 ImageView에 표시
             productViewModel.loadAndDisplayImage(
-                product.mainImage?.get(0)!!,
+                product.mainImageUrl,
                 holder.imageViewProduct
             )
 
             holder.textViewName.text = product.name
-            // 카테고리, 태그 분리 후 구분자 넣어서 결합
-            holder.textViewCategory.text =
-                listOfNotNull(category.main, category.mid, category.sub).joinToString(" > ")
-            holder.textViewHashTag.text = product.hashTag?.joinToString(" ") { "#$it" }
+//            // 카테고리, 태그 분리 후 구분자 넣어서 결합
+//            holder.textViewCategory.text =
+//                listOfNotNull(category.main, category.mid, category.sub).joinToString(" > ")
+//            holder.textViewHashTag.text = product.hashTag?.joinToString(" ") { "#$it" }
             // 가격 천의 자리에 쉼표 찍기
             holder.textViewPrice.text =
                 "${NumberFormat.getNumberInstance(Locale.getDefault()).format(product.price)}원"
@@ -233,14 +234,14 @@ class ProductListFragment : Fragment() {
         }
 
         // RecyclerView 데이터 필터링
-        fun filter(category: String) {
-            filteredProductList = if (category != "전체") {
-                productList.filter { it.category?.main == category }
-            } else {
-                productList
-            }
-            notifyDataSetChanged()
-        }
+//        fun filter(category: String) {
+//            filteredProductList = if (category != "전체") {
+//                productList.filter { it.category?.main == category }
+//            } else {
+//                productList
+//            }
+//            notifyDataSetChanged()
+//        }
 
         // RecyclerView 데이터 정렬 (정렬 기준 키, 내림차순 여부)
         fun sort(sortKey: String, isDescending: Boolean) {

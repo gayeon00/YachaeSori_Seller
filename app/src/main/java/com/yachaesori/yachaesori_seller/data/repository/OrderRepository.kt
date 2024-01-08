@@ -39,7 +39,7 @@ class OrderRepository {
                     val itemList = (orderData["itemList"] as List<*>).map {
                         val item = it as Map<*, *>
                         Item(
-                            item["productUid"] as String,
+                            item["productId"] as String,
                             //TODO Long으로 바꾸기
                             item["size"] as String,
                             //TODO Long으로 바꾸기

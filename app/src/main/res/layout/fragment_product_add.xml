@@ -51,16 +51,10 @@
                     android:text="@string/main_image_title"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-                <ImageView
-                    android:id="@+id/info_icon_main"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:src="@drawable/help_20px"
-                    app:tint="@color/md_theme_dark_outline" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/linearMainImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -88,7 +82,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:isScrollContainer="true"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                 </androidx.recyclerview.widget.RecyclerView>
 
@@ -120,6 +115,7 @@
                 android:layout_marginTop="10dp"
                 android:hint="@string/prompt_category_main"
                 android:transitionGroup="true"
+                android:visibility="gone"
                 app:errorEnabled="false"
                 tools:transitionGroup="true">
 
@@ -140,6 +136,7 @@
                 android:enabled="false"
                 android:hint="@string/prompt_category_mid"
                 android:transitionGroup="true"
+                android:visibility="gone"
                 app:errorEnabled="false"
                 tools:transitionGroup="true">
 
@@ -160,6 +157,7 @@
                 android:enabled="false"
                 android:hint="@string/prompt_category_sub"
                 android:transitionGroup="true"
+                android:visibility="gone"
                 app:errorEnabled="false"
                 tools:transitionGroup="true">
 
@@ -184,20 +182,20 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:layout_weight="1"
-                    android:hint="@string/prompt_hashtag"
+                    android:hint="@string/prompt_option"
                     android:transitionGroup="true"
                     app:endIconMode="clear_text"
                     app:errorEnabled="false">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/textInputEditTextHashTag"
+                        android:id="@+id/textInputEditTextOptions"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
-                    android:id="@+id/buttonAddHashTag"
+                    android:id="@+id/buttonAddOption"
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="65dp"
@@ -213,10 +211,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:text="@string/prompt_hashtag_helper"
-                android:textColor="@color/seed" />
+                android:textColor="@color/seed"
+                android:visibility="gone" />
 
             <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupHashTag"
+                android:id="@+id/chipGroupOption"
                 style="@style/Widget.Material3.ChipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -248,6 +247,7 @@
                 android:layout_marginTop="10dp"
                 android:hint="@string/prompt_product_description"
                 android:transitionGroup="true"
+                android:visibility="gone"
                 app:endIconMode="clear_text"
                 app:errorEnabled="false"
                 tools:transitionGroup="true">
@@ -332,7 +332,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/action_next" />
+            android:text="@string/action_add" />
 
     </LinearLayout>
 

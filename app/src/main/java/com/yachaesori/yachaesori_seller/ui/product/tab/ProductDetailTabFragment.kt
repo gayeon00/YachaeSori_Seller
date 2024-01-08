@@ -31,8 +31,7 @@ class ProductDetailTabFragment(val product: Product) : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         fragmentProductDetailTabBinding.run {
-            textViewProductDescription.text = product.description
-            productViewModel.loadAndDisplayImage(product.descriptionImage!!, imageViewProductDescription)
+            productViewModel.loadAndDisplayImage(product.detailImageUrl!!, imageViewProductDescription)
         }
     }
 
