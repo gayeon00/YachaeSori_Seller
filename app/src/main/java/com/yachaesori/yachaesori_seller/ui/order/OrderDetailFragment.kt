@@ -114,7 +114,7 @@ class OrderDetailFragment : Fragment() {
         Adapter<OrderItemRecyclerViewAdapter.OrderItemViewHolder>() {
         inner class OrderItemViewHolder(rowOrderItemBinding: RowOrderItemBinding) :
             ViewHolder(rowOrderItemBinding.root) {
-            val textViewOrderProductUid = rowOrderItemBinding.textViewOrderProductUid
+            val textViewOrderProductId = rowOrderItemBinding.textViewOrderProductId
             val textViewOrderProductCount = rowOrderItemBinding.textViewOrderProductCount
             val textViewOrderProductName = rowOrderItemBinding.textViewOrderProductName
             val textViewOrderProductOption = rowOrderItemBinding.textViewOrderProductOption
@@ -136,8 +136,8 @@ class OrderDetailFragment : Fragment() {
 
         override fun onBindViewHolder(holder: OrderItemViewHolder, position: Int) {
             val item = orderViewModel.order.value!!.itemList[position]
-            holder.textViewOrderProductUid.text =
-                item.productUid
+            holder.textViewOrderProductId.text =
+                item.productId
             holder.textViewOrderProductCount.text =
                 "${item.quantity}개"
             holder.textViewOrderProductName.text =

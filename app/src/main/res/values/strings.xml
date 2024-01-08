@@ -281,8 +281,8 @@
     </string-array>
 
     <string name="home_product_add_title">상품 등록</string>
-    <string name="main_image_title">상품 이미지 (최대 5개)</string>
-    <string name="main_image_count">0/5</string>
+    <string name="main_image_title">대표 이미지</string>
+    <string name="main_image_count">0/1</string>
     <string name="prompt_product_name">상품명</string>
     <string name="prompt_category_main">대분류</string>
     <string name="prompt_category_mid">중분류</string>
@@ -290,7 +290,7 @@
     <string name="prompt_hashtag_helper">쉼표(,)로 구분, 최대 10개</string>
     <string name="prompt_price">가격</string>
     <string name="prompt_product_description">상품 설명</string>
-    <string name="prompt_description_image">상품 설명 이미지 (1개)</string>
+    <string name="prompt_description_image">상세 이미지</string>
     <string name="label_description_image_count">0/1</string>
     <string name="action_cancel">취소</string>
     <string name="action_register">등록</string>
@@ -307,7 +307,7 @@
     <string name="flippers">오리발</string>
     <string name="bag">가방</string>
     <string name="water_toy">물놀이용품</string>
-    <string name="prompt_hashtag">해시태그</string>
+    <string name="prompt_option">옵션</string>
     <string name="button_delete_image">이미지 삭제 버튼</string>
     <string name="action_add">추가</string>
 

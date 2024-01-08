@@ -49,14 +49,16 @@
             android:layout_height="wrap_content"
             android:text="대분류 > 중분류 > 소분류"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/seed" />
+            android:textColor="@color/seed"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/textViewHashTag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="#태그1 # 태그2 #태그3"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:visibility="gone" />
 
         <View
             android:id="@+id/view2"

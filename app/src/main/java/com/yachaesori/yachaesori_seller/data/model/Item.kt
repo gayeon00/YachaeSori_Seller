@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Item(
-    var productUid: String,
+    var productId: String,
     //TODO Long으로 바꾸기
     var size: String,
     //TODO Long으로 바꾸기

@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -22,20 +22,15 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.ktx.Firebase
 import com.yachaesori.yachaesori_seller.MainActivity
 import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.data.model.Category
 import com.yachaesori.yachaesori_seller.data.model.Image
 import com.yachaesori.yachaesori_seller.data.model.Product
-import com.yachaesori.yachaesori_seller.data.model.Review
 import com.yachaesori.yachaesori_seller.databinding.FragmentProductAddBinding
-import com.yachaesori.yachaesori_seller.databinding.ItemImageviewDeleteBinding
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,15 +43,15 @@ class ProductAddFragment : Fragment() {
     lateinit var mainActivity: MainActivity
 
     // 대표 이미지 최대 5개, 설명 이미지 1개
-    private var mainImageList = mutableListOf<Pair<Image, Bitmap>>()
+    private var mainImage: Image? = null
     private var descriptionImage: Image? = null
 
     // 메인이미지, 상세이미지용 갤러리 실행 설정
     lateinit var mainGalleryLauncher: ActivityResultLauncher<Intent>
     lateinit var descriptionGalleryLauncher: ActivityResultLauncher<Intent>
 
-    // 화면에 추가된 태그 목록
-    private val addHashTagList = mutableListOf<String>()
+    // 화면에 추가된 옵션 목록
+    private val addOptionList = mutableListOf<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,10 +73,9 @@ class ProductAddFragment : Fragment() {
         mainGalleryLauncher = mainImageGallerySetting()
         descriptionGalleryLauncher = descriptionImageGallerySetting()
 
-        addHashTagList.clear()
+        addOptionList.clear()
 
         fragmentProductAddBinding.run {
-            TooltipCompat.setTooltipText(infoIconMain, getString(R.string.tooltip_main_image))
             TooltipCompat.setTooltipText(
                 infoIconDescription,
                 getString(R.string.tooltip_description_image)
@@ -94,13 +88,13 @@ class ProductAddFragment : Fragment() {
                 findNavController().popBackStack()
             }
 
-            recyclerViewMainImage.run {
-                adapter = MainImageRecyclerViewAdapter()
-                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            }
+//            recyclerViewMainImage.run {
+//                adapter = MainImageRecyclerViewAdapter()
+//                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+//            }
 
             // 대 → 중 → 소 선택에 따라 드롭박스 단계별 활성화, 세팅
-            dropdownCategoryMain.addTextChangedListener {
+            /*dropdownCategoryMain.addTextChangedListener {
                 // 유효성 검사
                 validateEditText(it.toString(), textInputLayoutCategoryMain, "대분류를 선택해 주세요")
                 textInputLayoutCategoryMid.isEnabled = true
@@ -221,7 +215,7 @@ class ProductAddFragment : Fragment() {
             }
             dropdownCategorySub.addTextChangedListener {
                 validateEditText(it.toString(), textInputLayoutCategorySub, "소분류를 선택해 주세요")
-            }
+            }*/
 
             // 입력시 실시간 유효성 검사
             textInputEditTextProductName.addTextChangedListener {
@@ -235,12 +229,12 @@ class ProductAddFragment : Fragment() {
             }
 
             // 해시태그 Chip 추가
-            textInputEditTextHashTag.setOnEditorActionListener { _, _, _ ->
-                addHashTag()
+            textInputEditTextOptions.setOnEditorActionListener { _, _, _ ->
+                addOption()
                 true
             }
-            buttonAddHashTag.setOnClickListener {
-                addHashTag()
+            buttonAddOption.setOnClickListener {
+                addOption()
             }
 
             // 대표 이미지 추가
@@ -265,12 +259,12 @@ class ProductAddFragment : Fragment() {
 
             buttonNext.setOnClickListener {
                 // 최종 유효성 검사
-                if (mainImageList.size < 1) {
+                if (mainImage == null) {
                     buttonAddMainImage.requestFocus()
                     scrollViewProductAdd.scrollTo(0, buttonAddMainImage.top)
                     Snackbar.make(
                         fragmentProductAddBinding.root,
-                        "상품 이미지를 1개 이상 등록해 주세요",
+                        "대표 이미지를 등록해 주세요",
                         Snackbar.LENGTH_SHORT
                     ).show()
                     return@setOnClickListener
@@ -283,30 +277,30 @@ class ProductAddFragment : Fragment() {
                 ) {
                     return@setOnClickListener
                 }
-                if (!validateEditText(
-                        dropdownCategoryMain.text.toString(),
-                        textInputLayoutCategoryMain,
-                        "대분류를 선택해 주세요"
-                    )
-                ) {
-                    return@setOnClickListener
-                }
-                if (!validateEditText(
-                        dropdownCategoryMid.text.toString(),
-                        textInputLayoutCategoryMid,
-                        "중분류를 선택해 주세요"
-                    )
-                ) {
-                    return@setOnClickListener
-                }
-                if (!validateEditText(
-                        dropdownCategorySub.text.toString(),
-                        textInputLayoutCategorySub,
-                        "소분류를 선택해 주세요"
-                    )
-                ) {
-                    return@setOnClickListener
-                }
+//                if (!validateEditText(
+//                        dropdownCategoryMain.text.toString(),
+//                        textInputLayoutCategoryMain,
+//                        "대분류를 선택해 주세요"
+//                    )
+//                ) {
+//                    return@setOnClickListener
+//                }
+//                if (!validateEditText(
+//                        dropdownCategoryMid.text.toString(),
+//                        textInputLayoutCategoryMid,
+//                        "중분류를 선택해 주세요"
+//                    )
+//                ) {
+//                    return@setOnClickListener
+//                }
+//                if (!validateEditText(
+//                        dropdownCategorySub.text.toString(),
+//                        textInputLayoutCategorySub,
+//                        "소분류를 선택해 주세요"
+//                    )
+//                ) {
+//                    return@setOnClickListener
+//                }
                 if (!validateEditText(
                         textInputEditTextPrice.text.toString(),
                         textInputLayoutPrice,
@@ -315,20 +309,20 @@ class ProductAddFragment : Fragment() {
                 ) {
                     return@setOnClickListener
                 }
-                if (!validateEditText(
-                        textInputEditTextDescription.text.toString(),
-                        textInputLayoutDescription,
-                        "상품 설명을 입력해 주세요"
-                    )
-                ) {
-                    return@setOnClickListener
-                }
+//                if (!validateEditText(
+//                        textInputEditTextDescription.text.toString(),
+//                        textInputLayoutDescription,
+//                        "상품 설명을 입력해 주세요"
+//                    )
+//                ) {
+//                    return@setOnClickListener
+//                }
                 if (descriptionImage == null) {
                     buttonAddDescImage.requestFocus()
                     scrollViewProductAdd.scrollTo(0, buttonAddDescImage.bottom)
                     Snackbar.make(
                         fragmentProductAddBinding.root,
-                        "상품 설명 이미지를 등록해 주세요",
+                        "상세 이미지를 등록해 주세요",
                         Snackbar.LENGTH_SHORT
                     ).show()
                     return@setOnClickListener
@@ -347,76 +341,72 @@ class ProductAddFragment : Fragment() {
                 val code = System.currentTimeMillis().toString()
 
                 // DB에 저장할 이미지들 파일명 설정
-                for (idx in mainImageList.indices) {
-                    mainImageList[idx].first.fileName = "image/${code}_main_image${idx + 1}.jpg"
-                }
+                mainImage!!.fileName = "image/${code}_main_image.jpg"
                 descriptionImage!!.fileName = "image/${code}_description_image.jpg"
 
                 val product = Product(
                     "",
-                    code,
                     textInputEditTextProductName.text.toString(),
                     textInputEditTextPrice.text.toString().toLong(),
-                    mainImageList.map { it.first.fileName.toString() },
-                    textInputEditTextDescription.text.toString(),
-                    descriptionImage!!.fileName,
-                    "야채소리id",
-                    null,
-                    null,
-                    addHashTagList,
-                    category,
-                    mutableListOf<Review>(),
-                    0L,
+                    mainImage!!.fileName!!,
+                    descriptionImage!!.fileName!!,
                     SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault()).format(Date()),
-                    "야채소리"
+                    0L,
+                    addOptionList
                 )
 
                 // DB에 저장할 product, image 리스트 전달
                 val imageArrayList = arrayListOf<Image>()
-                imageArrayList.addAll(mainImageList.map { it.first })
+                imageArrayList.add(mainImage!!)
                 imageArrayList.add(descriptionImage!!)
 
-                // Safe Args 방식 전달
-                val action = ProductAddFragmentDirections.actionItemProductAddToItemProductOption(
-                    product,
-                    imageArrayList.toTypedArray()
-                )
-                findNavController().navigate(action)
+                saveData(product, imageArrayList)
+
             }
         }
     }
 
-    private fun addHashTag() {
+    private fun saveData(product: Product, imageArrayList: ArrayList<Image>) {
+        // 상품 정보 DB 저장
+        productViewModel.addProduct(product)
+        // 이미지 업로드
+        productViewModel.uploadImageList(imageArrayList)
+
+        Toast.makeText(context, "상품이 등록 되었습니다", Toast.LENGTH_LONG).show()
+        findNavController().popBackStack(R.id.item_home, false)
+    }
+
+    private fun addOption() {
         fragmentProductAddBinding.run {
-            // 태그는 최대 10개까지 등록 가능
-            if (addHashTagList.size < 10) {
-                // 입력 문자열 태그로 분리, 중복 태그 & 이미 chip 생성된 태그 제외
-                val inputHashTagList = textInputEditTextHashTag.text.toString()
+            // 옵션는 최대 10개까지 등록 가능
+            if (addOptionList.size < 10) {
+                // 입력 문자열 옵션로 분리, 중복 옵션 & 이미 chip 생성된 옵션 제외
+                val inputOptionList = textInputEditTextOptions.text.toString()
                     .split(",")
                     .map(String::trim)
                     .distinct()
-                    .filter { !addHashTagList.contains(it) }
+                    .filter { !addOptionList.contains(it) }
 
-                // 추가된 태그 저장
-                addHashTagList.addAll(inputHashTagList)
+                // 추가된 옵션 저장
+                addOptionList.addAll(inputOptionList)
 
-                for (inputHashTag in inputHashTagList) {
+                for (inputOption in inputOptionList) {
                     val chip = layoutInflater.inflate(
                         R.layout.item_chip_input,
-                        chipGroupHashTag,
+                        chipGroupOption,
                         false
                     ) as Chip
                     chip.apply {
-                        text = inputHashTag
+                        text = inputOption
                         setOnCloseIconClickListener {
-                            chipGroupHashTag.removeView(it)
-                            addHashTagList.remove(inputHashTag)
+                            chipGroupOption.removeView(it)
+                            addOptionList.remove(inputOption)
                         }
                     }
-                    chipGroupHashTag.addView(chip)
+                    chipGroupOption.addView(chip)
                 }
             }
-            textInputEditTextHashTag.setText("")
+            textInputEditTextOptions.setText("")
         }
     }
 
@@ -443,31 +433,53 @@ class ProductAddFragment : Fragment() {
         val galleryLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 // 메인 이미지 최대 5개까지만 첨부 가능
-                if (mainImageList.count() < 5) {
+                if (mainImage == null) {
                     if (it.resultCode == AppCompatActivity.RESULT_OK && it.data?.data != null) {
                         val uri = it.data?.data!!
                         var bitmap: Bitmap? = null
+
+                        // 이미지 카드뷰 추가
+                        val previewLinearLayout = layoutInflater.inflate(
+                            R.layout.item_imageview_delete,
+                            fragmentProductAddBinding.linearMainImage,
+                            false
+                        ) as LinearLayout
+                        val previewImageView =
+                            previewLinearLayout.findViewById<ImageView>(R.id.imageViewDelete)
+                        val previewButton =
+                            previewLinearLayout.findViewById<Button>(R.id.buttonDelete)
+                        previewButton.setOnClickListener {
+                            // 이미지 카드뷰 삭제, 리스트에서 제거
+                            fragmentProductAddBinding.linearMainImage.removeView(
+                                previewLinearLayout
+                            )
+                            mainImage = null
+                            fragmentProductAddBinding.buttonAddMainImage.text = "0/1"
+                        }
+                        fragmentProductAddBinding.linearMainImage.addView(previewLinearLayout)
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                             val source =
                                 ImageDecoder.createSource(mainActivity.contentResolver, uri)
                             bitmap = ImageDecoder.decodeBitmap(source)
+                            previewImageView.setImageBitmap(bitmap)
                         } else {
                             val cursor =
                                 mainActivity.contentResolver.query(uri, null, null, null, null)
                             if (cursor != null) {
                                 cursor.moveToNext()
+
                                 val colIdx = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
                                 val source = cursor.getString(colIdx)
+
                                 bitmap = BitmapFactory.decodeFile(source)
+                                previewImageView.setImageBitmap(bitmap)
                             }
                         }
-                        // 메인 이미지 리스트에 추가
-                        val pairImageInfo = Image(uri.toString(), "") to bitmap!!
-                        mainImageList.add(pairImageInfo)
-                        fragmentProductAddBinding.buttonAddMainImage.text =
-                            "${mainImageList.size}/5"
-                        fragmentProductAddBinding.recyclerViewMainImage.adapter?.notifyDataSetChanged()
+
+                        // 이미지 정보 저장 해두기
+                        mainImage = Image(uri.toString(), "")
+                        fragmentProductAddBinding.buttonAddMainImage.text = "1/1"
                     }
                 }
             }
@@ -536,43 +548,43 @@ class ProductAddFragment : Fragment() {
     }
 
     // 메인 이미지 리사이클러뷰 어댑터
-    inner class MainImageRecyclerViewAdapter :
-        RecyclerView.Adapter<MainImageRecyclerViewAdapter.MainImageViewHolder>() {
-        inner class MainImageViewHolder(itemImageviewDeleteBinding: ItemImageviewDeleteBinding) :
-            RecyclerView.ViewHolder(itemImageviewDeleteBinding.root) {
-            val imageViewMain: ImageView = itemImageviewDeleteBinding.imageViewDelete
-            val textViewIsMain: TextView = itemImageviewDeleteBinding.textViewIsMain
-            private val buttonDeleteMain: Button = itemImageviewDeleteBinding.buttonDelete
-
-            init {
-                // 우측 상단 X버튼 클릭시 이미지 삭제
-                buttonDeleteMain.setOnClickListener {
-                    mainImageList.removeAt(adapterPosition)
-                    fragmentProductAddBinding.buttonAddMainImage.text = "${mainImageList.count()}/5"
-                    notifyDataSetChanged()
-                }
-            }
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainImageViewHolder {
-            val imageViewBinding = ItemImageviewDeleteBinding.inflate(layoutInflater)
-            // imageViewBinding.root.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            return MainImageViewHolder(imageViewBinding)
-        }
-
-        override fun getItemCount(): Int {
-            return mainImageList.size
-        }
-
-        override fun onBindViewHolder(holder: MainImageViewHolder, position: Int) {
-            // 메인 이미지 리스트에 저장된 Bitmap을 커스텀 뷰에 표시
-            holder.imageViewMain.setImageBitmap(mainImageList[position].second)
-            // 첫번째 이미지를 대표 이미지로 지정
-            holder.textViewIsMain.visibility = if (position == 0) {
-                View.VISIBLE
-            } else {
-                View.INVISIBLE
-            }
-        }
-    }
+//    inner class MainImageRecyclerViewAdapter :
+//        RecyclerView.Adapter<MainImageRecyclerViewAdapter.MainImageViewHolder>() {
+//        inner class MainImageViewHolder(itemImageviewDeleteBinding: ItemImageviewDeleteBinding) :
+//            RecyclerView.ViewHolder(itemImageviewDeleteBinding.root) {
+//            val imageViewMain: ImageView = itemImageviewDeleteBinding.imageViewDelete
+//            val textViewIsMain: TextView = itemImageviewDeleteBinding.textViewIsMain
+//            private val buttonDeleteMain: Button = itemImageviewDeleteBinding.buttonDelete
+//
+//            init {
+//                // 우측 상단 X버튼 클릭시 이미지 삭제
+//                buttonDeleteMain.setOnClickListener {
+//                    mainImage.removeAt(adapterPosition)
+//                    fragmentProductAddBinding.buttonAddMainImage.text = "${mainImage.count()}/5"
+//                    notifyDataSetChanged()
+//                }
+//            }
+//        }
+//
+//        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainImageViewHolder {
+//            val imageViewBinding = ItemImageviewDeleteBinding.inflate(layoutInflater)
+//            // imageViewBinding.root.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+//            return MainImageViewHolder(imageViewBinding)
+//        }
+//
+//        override fun getItemCount(): Int {
+//            return mainImage.size
+//        }
+//
+//        override fun onBindViewHolder(holder: MainImageViewHolder, position: Int) {
+//            // 메인 이미지 리스트에 저장된 Bitmap을 커스텀 뷰에 표시
+//            holder.imageViewMain.setImageBitmap(mainImage[position].second)
+//            // 첫번째 이미지를 대표 이미지로 지정
+//            holder.textViewIsMain.visibility = if (position == 0) {
+//                View.VISIBLE
+//            } else {
+//                View.INVISIBLE
+//            }
+//        }
+//    }
 }

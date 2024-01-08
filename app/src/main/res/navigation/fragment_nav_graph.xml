@@ -31,26 +31,8 @@
         android:name="com.yachaesori.yachaesori_seller.ui.product.ProductAddFragment"
         android:label="fragment_product_add"
         tools:layout="@layout/fragment_product_add" >
-        <action
-            android:id="@+id/action_item_product_add_to_item_product_option"
-            app:destination="@id/item_product_option"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
-    <fragment
-        android:id="@+id/item_product_option"
-        android:name="com.yachaesori.yachaesori_seller.ui.product.ProductOptionFragment"
-        android:label="fragment_product_option"
-        tools:layout="@layout/fragment_product_option" >
-        <argument
-            android:name="product"
-            app:argType="com.yachaesori.yachaesori_seller.data.model.Product" />
-        <argument
-            android:name="imageArray"
-            app:argType="com.yachaesori.yachaesori_seller.data.model.Image[]" />
-    </fragment>
+
 
     <fragment
         android:id="@+id/item_guide"
@@ -133,7 +115,7 @@
         android:label="fragment_product_detail"
         tools:layout="@layout/fragment_product_detail" >
         <argument
-            android:name="productUid"
+            android:name="productId"
             app:argType="string" />
     </fragment>
 
