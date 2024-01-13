@@ -92,8 +92,8 @@
         android:label="fragment_order_detail"
         tools:layout="@layout/fragment_order_detail" >
         <argument
-            android:name="order"
-            app:argType="com.yachaesori.yachaesori_seller.data.model.Order" />
+            android:name="position"
+            app:argType="integer" />
     </fragment>
 
     <fragment
