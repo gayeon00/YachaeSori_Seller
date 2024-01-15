@@ -83,11 +83,6 @@ class HomeFragment : Fragment() {
         }
 
         fragmentHomeBinding.run {
-            toolbarHome.run {
-                // 툴바 타이틀 폰트 설정
-                setTitleTextAppearance(requireContext(), R.style.HsbombaramTextAppearance)
-            }
-
             buttonRegProduct.setOnClickListener {
                 // 상품 등록 화면으로 이동
                 it.findNavController().navigate(R.id.action_item_home_to_item_product_add)

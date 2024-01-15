@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Yachaesori_seller" parent="Base.Theme.Yachaesori_seller">
+        <item name="android:windowSplashScreenBackground">@color/seed</item>
+    </style>
+</resources>

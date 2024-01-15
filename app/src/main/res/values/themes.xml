@@ -1,6 +1,6 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Swimmer_seller" parent="Theme.Material3.DayNight.NoActionBar">
+
+<resources>
+    <style name="Base.Theme.Yachaesori_seller" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
@@ -29,17 +29,11 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
     </style>
 
-    <style name="Theme.Swimmer_seller" parent="Base.Theme.Swimmer_seller" />
-
     <!--    Splash Screen Theme-->
     <style name="AppTheme.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item>
+        <item name="windowSplashScreenBackground">@color/seed</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/yachae_logo</item>
         <item name="windowSplashScreenAnimationDuration">1000</item>
-        <item name="postSplashScreenTheme">@style/Theme.Swimmer_seller</item>
-    </style>
-
-    <style name="HsbombaramTextAppearance">
-        <item name="android:fontFamily">@font/hsbombaram</item>
+        <item name="postSplashScreenTheme">@style/Theme.Yachaesori_seller</item>
     </style>
 </resources>
