@@ -86,7 +86,7 @@
     <string name="label_order_customer_uid">고객ID</string>
     <string name="label_order_customer_contact">고객 연락처</string>
     <string name="label_order_item_info">상품정보</string>
-    <string name="label_order_item_count">수량</string>
+    <string name="label_order_item_count">총 수량</string>
     <string name="label_order_item_total_price">총 금액</string>
     <string name="label_order_shipping_info">배송정보</string>
     <string name="label_order_receiver">수령인</string>
