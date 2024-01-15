@@ -2,11 +2,17 @@ package com.yachaesori.yachaesori_seller.ui.home
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.yachaesori.yachaesori_seller.data.model.Order
+import androidx.lifecycle.viewModelScope
 import com.yachaesori.yachaesori_seller.data.repository.OrderRepository
 import com.yachaesori.yachaesori_seller.data.repository.ProductRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class HomeViewModel(private val productRepository: ProductRepository, private val orderRepository: OrderRepository) : ViewModel() {
+class HomeViewModel(
+    private val productRepository: ProductRepository,
+    private val orderRepository: OrderRepository
+) : ViewModel() {
     // 주문 상태 건 수
     var orderCount = MutableLiveData<Long>()
     var paymentCount = MutableLiveData<Long>()
@@ -32,7 +38,7 @@ class HomeViewModel(private val productRepository: ProductRepository, private va
     var productCount = MutableLiveData<Long>()
 
     // 로그인 판매자가 등록한 상품 건 수 가져오기
-    fun getProductCount(){
+    fun getProductCount() {
         productRepository.getAllProduct {
             productCount.value = it.result.childrenCount
         }
@@ -40,38 +46,20 @@ class HomeViewModel(private val productRepository: ProductRepository, private va
 
     // 로그인 판매자에게 들어온 주문 상태별 건 수 가져오기
     fun getAllOrderCount(sellerUid: String) {
-        orderRepository.getAllOrder { task ->
-            val orderList = mutableListOf<Order>()
-            for (orderSnapshot in task.result.children) {
-                val order = orderSnapshot.getValue(Order::class.java)
-                if (order != null) {
-                    for (item in order.itemList) {
-                        if (item.sellerUid == sellerUid) {
-                            orderList.add(order)
-                            break
-                        }
-                    }
-                }
+        viewModelScope.launch {
+            val orderList = orderRepository.getOrderList()
+
+            withContext(Dispatchers.Main) {
+                // 판매자에게 들어온 전체 주문 수
+                orderCount.value = orderList.count().toLong()
             }
-
-            // 판매자에게 들어온 전체 주문 수
-            orderCount.value = orderList.count().toLong()
-
-            // 주문상태 주문 건 수
-//            paymentCount.value = orderList.count { it.state == OrderState.PAYMENT.code }.toLong()
-//            readyCount.value = orderList.count { it.state == OrderState.READY.code}.toLong()
-//            deliveryCount.value = orderList.count { it.state == OrderState.DELIVERY.code }.toLong()
-//            completeCount.value = orderList.count { it.state == OrderState.COMPLETE.code }.toLong()
-//
-//            cancelCount.value = orderList.count { it.state == OrderState.CANCEL.code }.toLong()
-//            exchangeCount.value = orderList.count { it.state == OrderState.EXCHANGE.code}.toLong()
-//            refundCount.value = orderList.count { it.state == OrderState.REFUND.code }.toLong()
         }
+
     }
 }
 
 // 주문상태
-enum class OrderState(val code: Long, val str: String){
+enum class OrderState(val code: Long, val str: String) {
     PAYMENT(1, "결제완료"),
     READY(2, "배송준비"),
     DELIVERY(3, "배송중"),

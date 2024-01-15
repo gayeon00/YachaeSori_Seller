@@ -52,31 +52,31 @@ class HomeFragment : Fragment() {
                 fragmentHomeBinding.run {
                     // 주문 상태 건 수 표시
                     textViewPaymentCount.text = it.filter {
-                        it.state == OrderState.PAYMENT.code
+                        it.status == OrderState.PAYMENT.code
                     }.size.toString()
 
                     textViewReadyCount.text = it.filter {
-                        it.state == OrderState.READY.code
+                        it.status == OrderState.READY.code
                     }.size.toString()
 
                     textViewProcessCount.text = it.filter {
-                        it.state == OrderState.DELIVERY.code
+                        it.status == OrderState.DELIVERY.code
                     }.size.toString()
 
                     textViewCompleteCount.text = it.filter {
-                        it.state == OrderState.COMPLETE.code
+                        it.status == OrderState.COMPLETE.code
                     }.size.toString()
 
                     textViewExchangeCount.text = it.filter {
-                        it.state == OrderState.EXCHANGE.code
+                        it.status == OrderState.EXCHANGE.code
                     }.size.toString()
 
                     textViewCancelCount.text = it.filter {
-                        it.state == OrderState.CANCEL.code
+                        it.status == OrderState.CANCEL.code
                     }.size.toString()
 
                     textViewRefundCount.text = it.filter {
-                        it.state == OrderState.REFUND.code
+                        it.status == OrderState.REFUND.code
                     }.size.toString()
                 }
             }
@@ -101,7 +101,7 @@ class HomeFragment : Fragment() {
         }
 
         // 로그인 판매자가 관련된 주문들 건 수 표시
-        orderViewModel.getOrder()
+        orderViewModel.getOrderList()
 
         // 로그인 판매자가 등록한 상품 개수 표시
         productViewModel.getProductCount()
