@@ -66,7 +66,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="@string/_5"
+                            android:text="@string/_0"
                             android:textAppearance="@style/TextAppearance.AppCompat.Large"
                             android:textColor="@color/md_theme_dark_inversePrimary"
                             android:textStyle="bold" />
@@ -105,7 +105,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="@string/_5"
+                            android:text="@string/_0"
                             android:textAppearance="@style/TextAppearance.AppCompat.Large"
                             android:textColor="@color/md_theme_dark_inversePrimary"
                             android:textStyle="bold" />
@@ -142,7 +142,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="@string/_5"
+                            android:text="@string/_0"
                             android:textAppearance="@style/TextAppearance.AppCompat.Large"
                             android:textColor="@color/md_theme_dark_inversePrimary"
                             android:textStyle="bold" />
@@ -178,7 +178,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
-                            android:text="@string/_5"
+                            android:text="@string/_0"
                             android:textAppearance="@style/TextAppearance.AppCompat.Large"
                             android:textColor="@color/md_theme_dark_inversePrimary"
                             android:textStyle="bold" />
@@ -225,7 +225,7 @@
                             android:id="@+id/textViewCancelCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/default_order_count"
+                            android:text="@string/_0"
                             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                             android:textColor="@color/md_theme_dark_inversePrimary"
                             android:textStyle="bold" />
@@ -248,7 +248,7 @@
                             android:id="@+id/textViewExchangeCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/default_order_count"
+                            android:text="@string/_0"
                             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                             android:textColor="@color/md_theme_dark_inversePrimary"
                             android:textStyle="bold" />
@@ -271,7 +271,7 @@
                             android:id="@+id/textViewRefundCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/default_order_count"
+                            android:text="@string/_0"
                             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                             android:textColor="@color/md_theme_dark_inversePrimary"
                             android:textStyle="bold" />

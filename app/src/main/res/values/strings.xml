@@ -121,7 +121,7 @@
     <string name="label_order_exchange">교환 신청</string>
     <string name="label_order_refund">환불 신청</string>
     <string name="_5">5</string>
-    <string name="default_order_count">5건</string>
+
     <string name="seller_guide_title">판매자 가이드</string>
     <string name="seller_guide_subject">상품 등록 가이드</string>
     <string name="seller_guide_content">SWIMMER 앱에서 당신의 상품을 판매해보세요!</string>

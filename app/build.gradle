@@ -5,6 +5,8 @@ plugins {
     // Safe Args
     id("androidx.navigation.safeargs.kotlin")
     id 'kotlin-parcelize'
+    // Add the Crashlytics Gradle plugin
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -77,4 +79,8 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     // Viewpager2 Indicator
     implementation("com.tbuonomo:dotsindicator:5.0")
+
+    //Crashlytics
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
 }

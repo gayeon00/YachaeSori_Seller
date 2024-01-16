@@ -35,18 +35,5 @@
             app:iconPadding="0dp"
             app:iconSize="20dp" />
 
-        <TextView
-            android:id="@+id/textViewIsMain"
-            style="@style/Widget.MaterialComponents.TextView"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:background="@drawable/primary_with_opacity_background"
-            android:text="대표사진"
-            android:textAlignment="center"
-            android:textColor="@color/md_theme_dark_onBackground"
-            android:textStyle="bold"
-            android:visibility="visible" />
-
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>
