@@ -60,7 +60,7 @@ class HomeViewModel(
 
 // 주문상태
 enum class OrderState(val code: Long, val str: String) {
-    PAYMENT(1, "결제완료"),
+    PAYMENT(1, "주문완료"),
     READY(2, "배송준비"),
     DELIVERY(3, "배송중"),
     COMPLETE(4, "배송완료"),

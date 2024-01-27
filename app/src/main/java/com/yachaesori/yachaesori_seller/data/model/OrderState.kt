@@ -4,7 +4,7 @@ import com.yachaesori.yachaesori_seller.data.model.OrderState.*
 
 // 주문상태
 enum class OrderState(val code: Long, val str: String) {
-    PAYMENT(1, "결제완료"),
+    PAYMENT(1, "주문완료"),
     READY(2, "배송준비"),
     DELIVERY(3, "배송중"),
     COMPLETE(4, "배송완료"),
@@ -26,7 +26,7 @@ fun getOrderState(code: Long? = null, str: String? = null): OrderState {
         }
     } else if (str != null) {
         when (str) {
-            "결제완료" -> return PAYMENT
+            "주문완료" -> return PAYMENT
             "배송준비" -> return READY
             "배송중" -> return DELIVERY
             "배송완료" -> return COMPLETE

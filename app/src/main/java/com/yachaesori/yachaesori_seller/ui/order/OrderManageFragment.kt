@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.yachaesori.yachaesori_seller.data.model.OrderState
 import com.yachaesori.yachaesori_seller.databinding.FragmentOrderManageBinding
+import org.apache.poi.ss.usermodel.WorkbookFactory
+import java.io.FileOutputStream
+import java.io.IOException
 
 class OrderManageFragment : Fragment() {
     private val orderListAdapter = OrderListAdapter()
@@ -30,17 +33,6 @@ class OrderManageFragment : Fragment() {
         orderViewModel =
             ViewModelProvider(this, OrderViewModelFactory())[OrderViewModel::class.java]
         Log.d("orderViewModel", orderViewModel.toString())
-
-
-//        fragmentOrderManageBinding.run {
-//            if (orderViewModel.orderList.value!!.isEmpty()) {
-//                linearLayoutNoOrder.visibility = View.VISIBLE
-//                linearLayoutRecyclerView.visibility = View.GONE
-//            } else {
-//                linearLayoutNoOrder.visibility = View.GONE
-//                linearLayoutRecyclerView.visibility = View.VISIBLE
-//            }
-//        }
 
         return fragmentOrderManageBinding.root
     }
@@ -64,6 +56,13 @@ class OrderManageFragment : Fragment() {
 
             toolbarManageOrder.setNavigationOnClickListener {
                 findNavController().popBackStack()
+            }
+
+            toolbarManageOrder.setOnMenuItemClickListener {
+                // 엑셀 생성 및 내보내기
+                val filePath = "${getExternalFilesDir(null).toString().absolutePath}/example.xlsx"
+                exportToExcel(filePath)
+                true
             }
 
 
@@ -102,6 +101,34 @@ class OrderManageFragment : Fragment() {
         }
     }
 
+    private fun exportToExcel(filePath: String) {
+        val workbook = WorkbookFactory.create(true)
+        val sheet = workbook.createSheet("주문내역")
+
+        // 데이터 입력 (예시)
+        val headerRow = sheet.createRow(0)
+        val headerCell = headerRow.createCell(0)
+        headerCell.setCellValue("Header")
+
+        val dataRow = sheet.createRow(1)
+        val dataCell = dataRow.createCell(0)
+        dataCell.setCellValue("Data")
+
+        // 파일에 쓰기
+        try {
+            val fos = FileOutputStream(filePath)
+            workbook.write(fos)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        // 메모리에서 workbook 해제
+        try {
+            workbook.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
 
 
 }
