@@ -1,7 +1,6 @@
 package com.yachaesori.yachaesori_seller.ui.order
 
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.storage.StorageManager
@@ -9,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -19,7 +17,7 @@ import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.yachaesori.yachaesori_seller.MainActivity
 import com.yachaesori.yachaesori_seller.data.model.OrderState
 import com.yachaesori.yachaesori_seller.databinding.FragmentOrderManageBinding
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.RuntimeException
@@ -117,30 +115,30 @@ class OrderManageFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     private fun exportToExcel() {
-        val hssfWorkBook = HSSFWorkbook()
-        val hssfSheet = hssfWorkBook.createSheet("주문내역")
+        val xssfWorkbook = XSSFWorkbook()
+        val xssfSheet = xssfWorkbook.createSheet("주문내역")
 
-        val hssfRow = hssfSheet.createRow(0)
-        val hssfCell = hssfRow.createCell(0)
-        hssfCell.setCellValue("hello")
+        val xssfRow = xssfSheet.createRow(0)
+        val xssfCell = xssfRow.createCell(0)
+        xssfCell.setCellValue("hello")
 
-        saveWorkBook(hssfWorkBook)
+        saveWorkBook(xssfWorkbook)
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
-    private fun saveWorkBook(hssfWorkbook: HSSFWorkbook) {
+    private fun saveWorkBook(xssfWorkbook: XSSFWorkbook) {
         val storageManager =
             requireActivity().getSystemService(Context.STORAGE_SERVICE) as StorageManager
         val storageVolume = storageManager.storageVolumes[0] //internal storage
 
 
         try {
-            val file = File(storageVolume.directory!!.path + "/Download/${today()}주문내역.xls")
+            val file = File(storageVolume.directory!!.path + "/Download/${today()}주문내역.xlsx")
             val fos = FileOutputStream(file)
 
-            hssfWorkbook.write(fos)
+            xssfWorkbook.write(fos)
             fos.close()
-            hssfWorkbook.close()
+            xssfWorkbook.close()
 
             (requireActivity() as MainActivity).showSnackBar("Download 폴더에 저장됐습니다.")
         } catch (e: Exception) {
