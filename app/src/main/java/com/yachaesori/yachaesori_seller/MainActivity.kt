@@ -8,17 +8,21 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
+import com.google.android.material.snackbar.Snackbar
+import com.yachaesori.yachaesori_seller.databinding.ActivityMainBinding
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
 //        installSplashScreen()
 
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
     }
 
@@ -31,6 +35,10 @@ class MainActivity : AppCompatActivity() {
             SystemClock.sleep(200)
             inputMethodManger.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
         }
+    }
+
+    fun showSnackBar(text: String) {
+        Snackbar.make(binding.root, text, Snackbar.LENGTH_SHORT).show()
     }
 
     fun navigate(id: Int) {

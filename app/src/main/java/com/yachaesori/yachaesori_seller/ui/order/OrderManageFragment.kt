@@ -1,22 +1,36 @@
 package com.yachaesori.yachaesori_seller.ui.order
 
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.storage.StorageManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.divider.MaterialDividerItemDecoration
+import com.yachaesori.yachaesori_seller.MainActivity
 import com.yachaesori.yachaesori_seller.data.model.OrderState
 import com.yachaesori.yachaesori_seller.databinding.FragmentOrderManageBinding
-import org.apache.poi.ss.usermodel.WorkbookFactory
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
+import java.lang.RuntimeException
+import java.text.SimpleDateFormat
+import java.util.Date
+
+// Request code for creating a PDF document.
+const val CREATE_FILE = 1
 
 class OrderManageFragment : Fragment() {
+
     private val orderListAdapter = OrderListAdapter()
     private lateinit var orderViewModel: OrderViewModel
     private var _fragmentOrderManageBinding: FragmentOrderManageBinding? = null
@@ -37,6 +51,7 @@ class OrderManageFragment : Fragment() {
         return fragmentOrderManageBinding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -60,8 +75,7 @@ class OrderManageFragment : Fragment() {
 
             toolbarManageOrder.setOnMenuItemClickListener {
                 // 엑셀 생성 및 내보내기
-                val filePath = "${getExternalFilesDir(null).toString().absolutePath}/example.xlsx"
-                exportToExcel(filePath)
+                exportToExcel()
                 true
             }
 
@@ -101,34 +115,53 @@ class OrderManageFragment : Fragment() {
         }
     }
 
-    private fun exportToExcel(filePath: String) {
-        val workbook = WorkbookFactory.create(true)
-        val sheet = workbook.createSheet("주문내역")
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun exportToExcel() {
+        val hssfWorkBook = HSSFWorkbook()
+        val hssfSheet = hssfWorkBook.createSheet("주문내역")
 
-        // 데이터 입력 (예시)
-        val headerRow = sheet.createRow(0)
-        val headerCell = headerRow.createCell(0)
-        headerCell.setCellValue("Header")
+        val hssfRow = hssfSheet.createRow(0)
+        val hssfCell = hssfRow.createCell(0)
+        hssfCell.setCellValue("hello")
 
-        val dataRow = sheet.createRow(1)
-        val dataCell = dataRow.createCell(0)
-        dataCell.setCellValue("Data")
+        saveWorkBook(hssfWorkBook)
+    }
 
-        // 파일에 쓰기
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun saveWorkBook(hssfWorkbook: HSSFWorkbook) {
+        val storageManager =
+            requireActivity().getSystemService(Context.STORAGE_SERVICE) as StorageManager
+        val storageVolume = storageManager.storageVolumes[0] //internal storage
+
+
         try {
-            val fos = FileOutputStream(filePath)
-            workbook.write(fos)
-        } catch (e: IOException) {
-            e.printStackTrace()
+            val file = File(storageVolume.directory!!.path + "/Download/${today()}주문내역.xls")
+            val fos = FileOutputStream(file)
+
+            hssfWorkbook.write(fos)
+            fos.close()
+            hssfWorkbook.close()
+
+            (requireActivity() as MainActivity).showSnackBar("Download 폴더에 저장됐습니다.")
+        } catch (e: Exception) {
+            (requireActivity() as MainActivity).showSnackBar("오류가 발생했습니다.")
+            throw RuntimeException(e)
         }
 
-        // 메모리에서 workbook 해제
-        try {
-            workbook.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+
+
+    }
+
+    private fun today(): String {
+        val now = System.currentTimeMillis()
+        val date = Date(now)
+        val sdf = SimpleDateFormat("yyyyMMdd")
+        return sdf.format(date)
     }
 
 
 }
+
+
+
+
