@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -15,11 +17,12 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.data.model.Product
 import com.yachaesori.yachaesori_seller.databinding.FragmentProductDetailBinding
+import com.yachaesori.yachaesori_seller.ui.order.OrderManageFragmentDirections
 import java.text.NumberFormat
 import java.util.Locale
 
 class ProductDetailFragment : Fragment() {
-    private lateinit var productViewModel: ProductViewModel
+    private val productViewModel: ProductViewModel by activityViewModels {ProductViewModelFactory()}
 
     private var _fragmentProductDetailBinding: FragmentProductDetailBinding? = null
     private val fragmentProductDetailBinding get() = _fragmentProductDetailBinding!!
@@ -39,9 +42,6 @@ class ProductDetailFragment : Fragment() {
         val args = ProductDetailFragmentArgs.fromBundle(requireArguments())
         productId = args.productId
 
-        productViewModel =
-            ViewModelProvider(this, ProductViewModelFactory())[ProductViewModel::class.java]
-
         if(productViewModel.product.value == Product("", "", 0L, "", "", "")) {
             productViewModel.getProduct(productId)
         }
@@ -58,6 +58,13 @@ class ProductDetailFragment : Fragment() {
             // Toolbar 백버튼
             toolbarProductDetail.setNavigationOnClickListener {
                 findNavController().popBackStack()
+            }
+
+            //수정하기 버튼
+            toolbarProductDetail.setOnMenuItemClickListener {
+                val action = ProductDetailFragmentDirections.actionItemProductDetailToItemProductAdd(true)
+                findNavController().navigate(action)
+                true
             }
 
             fabProductDetail.setOnClickListener {

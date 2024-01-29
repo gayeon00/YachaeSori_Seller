@@ -31,6 +31,10 @@
         android:name="com.yachaesori.yachaesori_seller.ui.product.ProductAddFragment"
         android:label="fragment_product_add"
         tools:layout="@layout/fragment_product_add" >
+        <argument
+            android:name="isEdit"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 
 
@@ -117,6 +121,9 @@
         <argument
             android:name="productId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_item_product_detail_to_item_product_add"
+            app:destination="@id/item_product_add" />
     </fragment>
 
 </navigation>

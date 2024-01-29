@@ -16,6 +16,7 @@
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
+        app:menu="@menu/menu_edit"
         app:navigationIcon="@drawable/arrow_back_24px"
         app:navigationIconTint="@color/white"
         app:title="상품 상세"

@@ -20,8 +20,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -31,12 +33,13 @@ import com.yachaesori.yachaesori_seller.data.model.Category
 import com.yachaesori.yachaesori_seller.data.model.Image
 import com.yachaesori.yachaesori_seller.data.model.Product
 import com.yachaesori.yachaesori_seller.databinding.FragmentProductAddBinding
+import com.yachaesori.yachaesori_seller.ui.order.OrderDetailFragmentArgs
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class ProductAddFragment : Fragment() {
-    lateinit var productViewModel: ProductViewModel
+    private val productViewModel: ProductViewModel by activityViewModels {ProductViewModelFactory()}
 
     private var _fragmentProductAddBinding: FragmentProductAddBinding? = null
     private val fragmentProductAddBinding get() = _fragmentProductAddBinding!!
@@ -53,6 +56,11 @@ class ProductAddFragment : Fragment() {
     // 화면에 추가된 옵션 목록
     private val addOptionList = mutableListOf<String>()
 
+    //Edit일 경우
+    private val oldProduct = Product()
+
+    private val args: ProductAddFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -66,8 +74,25 @@ class ProductAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        productViewModel =
-            ViewModelProvider(this, ProductViewModelFactory())[ProductViewModel::class.java]
+        if(args.isEdit) {
+            fragmentProductAddBinding.buttonNext.text = "수정하기"
+        }
+
+        // Observer
+        productViewModel.product.observe(viewLifecycleOwner) { product ->
+
+            fragmentProductAddBinding.run {
+                //TODO: 대표 이미지 보여주기
+
+                textInputEditTextProductName.setText(product.name)
+                addOption(product.options.toMutableList())
+                textInputEditTextPrice.setText(product.price.toString())
+                //TODO: 상세 이미지 보여주기
+
+            }
+
+
+        }
 
 
         mainGalleryLauncher = mainImageGallerySetting()
@@ -88,135 +113,6 @@ class ProductAddFragment : Fragment() {
                 findNavController().popBackStack()
             }
 
-//            recyclerViewMainImage.run {
-//                adapter = MainImageRecyclerViewAdapter()
-//                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-//            }
-
-            // 대 → 중 → 소 선택에 따라 드롭박스 단계별 활성화, 세팅
-            /*dropdownCategoryMain.addTextChangedListener {
-                // 유효성 검사
-                validateEditText(it.toString(), textInputLayoutCategoryMain, "대분류를 선택해 주세요")
-                textInputLayoutCategoryMid.isEnabled = true
-
-                // 선택한 대분류에 따라 중분류 다르게 표시, 대분류 먼저 선택해야 중분류 선택 활성화. 소분류는 아직 비활성화
-                when (it.toString()) {
-                    getString(R.string.female) -> dropdownCategoryMid.setSimpleItems(
-                        resources.getStringArray(
-                            R.array.categoryMid1
-                        )
-                    )
-
-                    getString(R.string.male) -> dropdownCategoryMid.setSimpleItems(
-                        resources.getStringArray(
-                            R.array.categoryMid2
-                        )
-                    )
-
-                    getString(R.string.child) -> dropdownCategoryMid.setSimpleItems(
-                        resources.getStringArray(
-                            R.array.categoryMid3
-                        )
-                    )
-
-                    getString(R.string.supplies) -> dropdownCategoryMid.setSimpleItems(
-                        resources.getStringArray(
-                            R.array.categoryMid4
-                        )
-                    )
-
-                    else -> textInputLayoutCategoryMid.isEnabled = false
-                }
-            }
-            dropdownCategoryMid.addTextChangedListener {
-                validateEditText(it.toString(), textInputLayoutCategoryMid, "중분류를 선택해 주세요")
-                // 선택한 중분류에 따라 소분류 다르게 표시
-                val categoryMain = dropdownCategoryMain.text.toString()
-                val categoryMid = it.toString()
-                textInputLayoutCategorySub.isEnabled = true
-
-                when (categoryMain) {
-                    getString(R.string.female) -> {
-                        when (categoryMid) {
-                            getString(R.string.swimsuit) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub1_1)
-                            )
-
-                            getString(R.string.bikini) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub1_2)
-                            )
-
-                            getString(R.string.rashguard) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub1_3)
-                            )
-
-                            getString(R.string.beachwear) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub1_4)
-                            )
-                        }
-                    }
-
-                    getString(R.string.male) -> {
-                        when (categoryMid) {
-                            getString(R.string.swimsuit) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub2_1)
-                            )
-
-                            getString(R.string.rashguard) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub2_2)
-                            )
-
-                            getString(R.string.beachwear) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub2_3)
-                            )
-                        }
-                    }
-
-                    getString(R.string.child) -> {
-                        when (categoryMid) {
-                            getString(R.string.swimsuit) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub3_1)
-                            )
-
-                            getString(R.string.rashguard) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub3_2)
-                            )
-                        }
-                    }
-
-                    getString(R.string.supplies) -> {
-                        when (categoryMid) {
-                            getString(R.string.goggles) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub4_1)
-                            )
-
-                            getString(R.string.cap) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(
-                                    R.array.categorySub4_2
-                                )
-                            )
-
-                            getString(R.string.flippers) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub4_3)
-                            )
-
-                            getString(R.string.bag) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(
-                                    R.array.categorySub4_4
-                                )
-                            )
-
-                            getString(R.string.water_toy) -> dropdownCategorySub.setSimpleItems(
-                                resources.getStringArray(R.array.categorySub4_5)
-                            )
-                        }
-                    }
-                }
-            }
-            dropdownCategorySub.addTextChangedListener {
-                validateEditText(it.toString(), textInputLayoutCategorySub, "소분류를 선택해 주세요")
-            }*/
-
             // 입력시 실시간 유효성 검사
             textInputEditTextProductName.addTextChangedListener {
                 validateEditText(it.toString(), textInputLayoutName, "상품명을 입력해 주세요")
@@ -230,11 +126,11 @@ class ProductAddFragment : Fragment() {
 
             // 해시태그 Chip 추가
             textInputEditTextOptions.setOnEditorActionListener { _, _, _ ->
-                addOption()
+                addOption(addOptionList)
                 true
             }
             buttonAddOption.setOnClickListener {
-                addOption()
+                addOption(addOptionList)
             }
 
             // 대표 이미지 추가
@@ -277,30 +173,6 @@ class ProductAddFragment : Fragment() {
                 ) {
                     return@setOnClickListener
                 }
-//                if (!validateEditText(
-//                        dropdownCategoryMain.text.toString(),
-//                        textInputLayoutCategoryMain,
-//                        "대분류를 선택해 주세요"
-//                    )
-//                ) {
-//                    return@setOnClickListener
-//                }
-//                if (!validateEditText(
-//                        dropdownCategoryMid.text.toString(),
-//                        textInputLayoutCategoryMid,
-//                        "중분류를 선택해 주세요"
-//                    )
-//                ) {
-//                    return@setOnClickListener
-//                }
-//                if (!validateEditText(
-//                        dropdownCategorySub.text.toString(),
-//                        textInputLayoutCategorySub,
-//                        "소분류를 선택해 주세요"
-//                    )
-//                ) {
-//                    return@setOnClickListener
-//                }
                 if (!validateEditText(
                         textInputEditTextPrice.text.toString(),
                         textInputLayoutPrice,
@@ -309,14 +181,6 @@ class ProductAddFragment : Fragment() {
                 ) {
                     return@setOnClickListener
                 }
-//                if (!validateEditText(
-//                        textInputEditTextDescription.text.toString(),
-//                        textInputLayoutDescription,
-//                        "상품 설명을 입력해 주세요"
-//                    )
-//                ) {
-//                    return@setOnClickListener
-//                }
                 if (descriptionImage == null) {
                     buttonAddDescImage.requestFocus()
                     scrollViewProductAdd.scrollTo(0, buttonAddDescImage.bottom)
@@ -329,12 +193,6 @@ class ProductAddFragment : Fragment() {
                 }
                 // 상품 등록 진행중 표시
                 progressBar.visibility = View.VISIBLE
-
-                val category = Category(
-                    dropdownCategoryMain.text.toString(),
-                    dropdownCategoryMid.text.toString(),
-                    dropdownCategorySub.text.toString()
-                )
 
 
                 // 상품 식별, 파일명에 사용할 고유 코드
@@ -360,10 +218,20 @@ class ProductAddFragment : Fragment() {
                 imageArrayList.add(mainImage!!)
                 imageArrayList.add(descriptionImage!!)
 
-                saveData(product, imageArrayList)
+                if(args.isEdit) {
+                    editData(product, imageArrayList)
+                } else {
+                    saveData(product, imageArrayList)
+                }
+
 
             }
         }
+    }
+
+    //TODO: 수정일 경우
+    private fun editData(product: Product, imageArrayList: ArrayList<Image>) {
+
     }
 
     private fun saveData(product: Product, imageArrayList: ArrayList<Image>) {
@@ -376,19 +244,19 @@ class ProductAddFragment : Fragment() {
         findNavController().popBackStack(R.id.item_home, false)
     }
 
-    private fun addOption() {
+    private fun addOption(list: MutableList<String>) {
         fragmentProductAddBinding.run {
             // 옵션는 최대 10개까지 등록 가능
-            if (addOptionList.size < 10) {
+            if (list.size < 10) {
                 // 입력 문자열 옵션로 분리, 중복 옵션 & 이미 chip 생성된 옵션 제외
                 val inputOptionList = textInputEditTextOptions.text.toString()
                     .split(",")
                     .map(String::trim)
                     .distinct()
-                    .filter { !addOptionList.contains(it) }
+                    .filter { !list.contains(it) }
 
                 // 추가된 옵션 저장
-                addOptionList.addAll(inputOptionList)
+                list.addAll(inputOptionList)
 
                 for (inputOption in inputOptionList) {
                     val chip = layoutInflater.inflate(
@@ -400,7 +268,7 @@ class ProductAddFragment : Fragment() {
                         text = inputOption
                         setOnCloseIconClickListener {
                             chipGroupOption.removeView(it)
-                            addOptionList.remove(inputOption)
+                            list.remove(inputOption)
                         }
                     }
                     chipGroupOption.addView(chip)
@@ -546,45 +414,4 @@ class ProductAddFragment : Fragment() {
 
         return galleryLauncher
     }
-
-    // 메인 이미지 리사이클러뷰 어댑터
-//    inner class MainImageRecyclerViewAdapter :
-//        RecyclerView.Adapter<MainImageRecyclerViewAdapter.MainImageViewHolder>() {
-//        inner class MainImageViewHolder(itemImageviewDeleteBinding: ItemImageviewDeleteBinding) :
-//            RecyclerView.ViewHolder(itemImageviewDeleteBinding.root) {
-//            val imageViewMain: ImageView = itemImageviewDeleteBinding.imageViewDelete
-//            val textViewIsMain: TextView = itemImageviewDeleteBinding.textViewIsMain
-//            private val buttonDeleteMain: Button = itemImageviewDeleteBinding.buttonDelete
-//
-//            init {
-//                // 우측 상단 X버튼 클릭시 이미지 삭제
-//                buttonDeleteMain.setOnClickListener {
-//                    mainImage.removeAt(adapterPosition)
-//                    fragmentProductAddBinding.buttonAddMainImage.text = "${mainImage.count()}/5"
-//                    notifyDataSetChanged()
-//                }
-//            }
-//        }
-//
-//        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainImageViewHolder {
-//            val imageViewBinding = ItemImageviewDeleteBinding.inflate(layoutInflater)
-//            // imageViewBinding.root.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
-//            return MainImageViewHolder(imageViewBinding)
-//        }
-//
-//        override fun getItemCount(): Int {
-//            return mainImage.size
-//        }
-//
-//        override fun onBindViewHolder(holder: MainImageViewHolder, position: Int) {
-//            // 메인 이미지 리스트에 저장된 Bitmap을 커스텀 뷰에 표시
-//            holder.imageViewMain.setImageBitmap(mainImage[position].second)
-//            // 첫번째 이미지를 대표 이미지로 지정
-//            holder.textViewIsMain.visibility = if (position == 0) {
-//                View.VISIBLE
-//            } else {
-//                View.INVISIBLE
-//            }
-//        }
-//    }
 }
