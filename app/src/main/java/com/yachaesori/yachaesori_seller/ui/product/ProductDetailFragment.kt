@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -17,36 +15,23 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.data.model.Product
 import com.yachaesori.yachaesori_seller.databinding.FragmentProductDetailBinding
-import com.yachaesori.yachaesori_seller.ui.order.OrderManageFragmentDirections
 import java.text.NumberFormat
 import java.util.Locale
 
 class ProductDetailFragment : Fragment() {
-    private val productViewModel: ProductViewModel by activityViewModels {ProductViewModelFactory()}
+    private val productViewModel: ProductViewModel by activityViewModels { ProductViewModelFactory() }
 
     private var _fragmentProductDetailBinding: FragmentProductDetailBinding? = null
     private val fragmentProductDetailBinding get() = _fragmentProductDetailBinding!!
 
-    // 상품 목록에서 전달받은 상품 식별용 uid
-    lateinit var productId: String
-
     // 추가할 탭 TabItem
-    var tabNameArray = arrayOf("상품상세", "상품후기", "Q&A")
+    private val tabNameArray = arrayOf("상품상세", "상품후기", "Q&A")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _fragmentProductDetailBinding = FragmentProductDetailBinding.inflate(inflater)
-
-        val args = ProductDetailFragmentArgs.fromBundle(requireArguments())
-        productId = args.productId
-
-        if(productViewModel.product.value == Product("", "", 0L, "", "", "")) {
-            productViewModel.getProduct(productId)
-        }
-
-        Log.d("ProductDetailFragment", productId)
 
         return fragmentProductDetailBinding.root
     }
@@ -62,8 +47,8 @@ class ProductDetailFragment : Fragment() {
 
             //수정하기 버튼
             toolbarProductDetail.setOnMenuItemClickListener {
-                val action = ProductDetailFragmentDirections.actionItemProductDetailToItemProductAdd(true)
-                findNavController().navigate(action)
+                productViewModel.isEditMode.value = true
+                findNavController().navigate(R.id.action_item_product_detail_to_item_product_add)
                 true
             }
 
@@ -76,9 +61,8 @@ class ProductDetailFragment : Fragment() {
         }
 
         // Observer
-        productViewModel.product.observe(viewLifecycleOwner) { product ->
+        productViewModel.selectedProduct.observe(viewLifecycleOwner) { product ->
             fragmentProductDetailBinding.run {
-
 
                 textViewProductName.text = product.name
                 textViewProductPrice.text = "${
@@ -87,28 +71,23 @@ class ProductDetailFragment : Fragment() {
                 // 해시태그 추가
                 addOption(product.options, chipGroupProductOption)
                 // 리뷰 개수
-                // tabNameArray[1] = "상품후기 (${product.reviewList?.size})"
+                // TabLayout 세팅
+                tabLayoutViewPagerSetting(product)
 
-                Log.d("ProductDetailFragment", productViewModel.product.value.toString())
-                if (productViewModel.product.value != Product("", "", 0L, "", "", "")) {
-                    // TabLayout 세팅
-                    tabLayoutViewPagerSetting()
-
-                    // 메인 이미지
-                    setMainImage()
-                }
+                // 메인 이미지
+                setMainImage(product)
 
             }
         }
 
     }
 
-    private fun tabLayoutViewPagerSetting() {
+    private fun tabLayoutViewPagerSetting(product: Product) {
         fragmentProductDetailBinding.run {
             // ViewPager2 어댑터 등록
             viewPagerContent.adapter = ProductDetailTabLayoutAdapter(
                 this@ProductDetailFragment,
-                productViewModel.product.value!!
+                product
             )
 
             val tabItemProductInfo: TabLayout.Tab = tabLayout.newTab()
@@ -149,11 +128,11 @@ class ProductDetailFragment : Fragment() {
         }
     }
 
-    private fun setMainImage() {
+    private fun setMainImage(product: Product) {
         // 메인 이미지 다운 받아서 표시
-        val imageStoragePath = productViewModel.product.value?.mainImageUrl
-        Log.d("ProductDetailFragment", productViewModel.product.value.toString())
-        if (imageStoragePath != null) {
+        val imageStoragePath = product.mainImageUrl
+        Log.d("ProductDetailFragment", product.toString())
+        if (imageStoragePath.isNotEmpty()) {
             productViewModel.loadAndDisplayImage(
                 imageStoragePath,
                 fragmentProductDetailBinding.imageViewMainImage

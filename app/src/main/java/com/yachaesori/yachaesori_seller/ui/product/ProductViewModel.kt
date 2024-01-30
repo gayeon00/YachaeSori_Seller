@@ -7,11 +7,13 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
 import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.data.model.Image
 import com.yachaesori.yachaesori_seller.data.model.Product
 import com.yachaesori.yachaesori_seller.data.repository.ProductRepository
+import kotlinx.coroutines.launch
 
 class ProductViewModel(private val productRepository: ProductRepository) : ViewModel() {
     private val _productList = MutableLiveData<List<Product>>()
@@ -20,26 +22,18 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
     private val _productCount = MutableLiveData<Long>()
     val productCount: LiveData<Long> = _productCount
 
-    private val _product = MutableLiveData<Product>()
-    val product: LiveData<Product> = _product
+    var selectedProduct: MutableLiveData<Product> = MutableLiveData()
+    var isEditMode: MutableLiveData<Boolean> = MutableLiveData()
 
 
     init {
         _productList.value = mutableListOf<Product>()
         _productCount.value = 0L
-        _product.value = Product("","",0L,"","","")
+        selectedProduct.value = Product("", "", 0L, "", "", "")
     }
 
-    // 상품 정보 가져오기 (상품 상세, 수정용)
-    fun getProduct(productId: String) {
-        productRepository.getProductByProductId(productId) { task ->
-            for (productSnapshot in task.result.children) {
-                val product = productSnapshot.getValue(Product::class.java)
-                if (product != null) {
-                    _product.value = product!!
-                }
-            }
-        }
+    fun setSelectedProduct(product: Product) {
+        selectedProduct.value = product
     }
 
     // 판매자가 등록한 상품 리스트 가져오기 (상품 목록용)
@@ -64,8 +58,18 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
         }
     }
 
-    fun addProduct(product: Product) {
-        productRepository.addProduct(product) {}
+    fun saveOrUpdateProduct(product: Product) {
+        if (selectedProduct.value != Product()) {
+            viewModelScope.launch {
+                productRepository.updateProduct(product)
+            }
+
+        } else {
+            viewModelScope.launch {
+                productRepository.addProduct(product) {}
+            }
+        }
+
     }
 
     // Storage 이미지 업로드

@@ -7,6 +7,7 @@ import android.graphics.ImageDecoder
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,45 +22,37 @@ import androidx.appcompat.widget.TooltipCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.yachaesori.yachaesori_seller.MainActivity
 import com.yachaesori.yachaesori_seller.R
-import com.yachaesori.yachaesori_seller.data.model.Category
 import com.yachaesori.yachaesori_seller.data.model.Image
 import com.yachaesori.yachaesori_seller.data.model.Product
 import com.yachaesori.yachaesori_seller.databinding.FragmentProductAddBinding
-import com.yachaesori.yachaesori_seller.ui.order.OrderDetailFragmentArgs
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class ProductAddFragment : Fragment() {
-    private val productViewModel: ProductViewModel by activityViewModels {ProductViewModelFactory()}
+    private val productViewModel: ProductViewModel by activityViewModels { ProductViewModelFactory() }
 
     private var _fragmentProductAddBinding: FragmentProductAddBinding? = null
     private val fragmentProductAddBinding get() = _fragmentProductAddBinding!!
-    lateinit var mainActivity: MainActivity
+    private lateinit var mainActivity: MainActivity
 
-    // 대표 이미지 최대 5개, 설명 이미지 1개
+    // 대표 이미지 1개, 설명 이미지 1개
     private var mainImage: Image? = null
     private var descriptionImage: Image? = null
 
     // 메인이미지, 상세이미지용 갤러리 실행 설정
-    lateinit var mainGalleryLauncher: ActivityResultLauncher<Intent>
-    lateinit var descriptionGalleryLauncher: ActivityResultLauncher<Intent>
+    private lateinit var mainGalleryLauncher: ActivityResultLauncher<Intent>
+    private lateinit var descriptionGalleryLauncher: ActivityResultLauncher<Intent>
 
     // 화면에 추가된 옵션 목록
     private val addOptionList = mutableListOf<String>()
 
-    //Edit일 경우
-    private val oldProduct = Product()
-
-    private val args: ProductAddFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,26 +67,27 @@ class ProductAddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(args.isEdit) {
+        if (productViewModel.isEditMode.value == true) {
+
             fragmentProductAddBinding.buttonNext.text = "수정하기"
-        }
 
-        // Observer
-        productViewModel.product.observe(viewLifecycleOwner) { product ->
+            // Observer
+            productViewModel.selectedProduct.observe(viewLifecycleOwner) { product ->
 
-            fragmentProductAddBinding.run {
-                //TODO: 대표 이미지 보여주기
+                fragmentProductAddBinding.run {
+                    mainImage = Image()
+                    showMainImage(product)
 
-                textInputEditTextProductName.setText(product.name)
-                addOption(product.options.toMutableList())
-                textInputEditTextPrice.setText(product.price.toString())
-                //TODO: 상세 이미지 보여주기
+                    textInputEditTextProductName.setText(product.name)
+                    //TODO: 수정도 되도록 해야함
+                    addOption(product.options.toMutableList())
+                    textInputEditTextPrice.setText(product.price.toString())
 
+                    showDetailImage(product)
+
+                }
             }
-
-
         }
-
 
         mainGalleryLauncher = mainImageGallerySetting()
         descriptionGalleryLauncher = descriptionImageGallerySetting()
@@ -218,25 +212,69 @@ class ProductAddFragment : Fragment() {
                 imageArrayList.add(mainImage!!)
                 imageArrayList.add(descriptionImage!!)
 
-                if(args.isEdit) {
-                    editData(product, imageArrayList)
-                } else {
-                    saveData(product, imageArrayList)
-                }
-
-
+                saveOrUpdateData(product, imageArrayList)
             }
         }
     }
 
-    //TODO: 수정일 경우
-    private fun editData(product: Product, imageArrayList: ArrayList<Image>) {
+    private fun updateChipGroup(options: List<String>) {
+        fragmentProductAddBinding.run {
+            chipGroupOption.removeAllViews()
 
+            for(option in options){
+                val chip = createChip(option)
+                chipGroupOption.addView(chip)
+            }
+        }
     }
 
-    private fun saveData(product: Product, imageArrayList: ArrayList<Image>) {
+    private fun createChip(option: String): Chip {
+        val chip = layoutInflater.inflate(
+            R.layout.item_chip_input,
+            fragmentProductAddBinding.chipGroupOption,
+            false
+        ) as Chip
+        chip.text = option
+        chip.isCloseIconVisible = true
+        chip.setOnCloseIconClickListener {
+            // Chip 삭제
+            fragmentProductAddBinding.chipGroupOption.removeView(chip)
+        }
+        return chip
+    }
+
+    private fun showDetailImage(product: Product) {
+        //TODO: 상세 이미지 보여주기
+        val dPreviewImageView = makeDetailImageCardView()
+
+        // 메인 이미지 다운 받아서 표시
+        val dImageStoragePath = product.detailImageUrl
+        Log.d("ProductDetailFragment", product.toString())
+        if (dImageStoragePath.isNotEmpty()) {
+            productViewModel.loadAndDisplayImage(
+                dImageStoragePath,
+                dPreviewImageView
+            )
+        }
+    }
+
+    private fun showMainImage(product: Product) {
+        val mPreviewImageView = makeMainImageCardView()
+
+        // 메인 이미지 다운 받아서 표시
+        val mImageStoragePath = product.mainImageUrl
+        Log.d("ProductDetailFragment", product.toString())
+        if (mImageStoragePath.isNotEmpty()) {
+            productViewModel.loadAndDisplayImage(
+                mImageStoragePath,
+                mPreviewImageView
+            )
+        }
+    }
+
+    private fun saveOrUpdateData(product: Product, imageArrayList: ArrayList<Image>) {
         // 상품 정보 DB 저장
-        productViewModel.addProduct(product)
+        productViewModel.saveOrUpdateProduct(product)
         // 이미지 업로드
         productViewModel.uploadImageList(imageArrayList)
 
@@ -258,19 +296,8 @@ class ProductAddFragment : Fragment() {
                 // 추가된 옵션 저장
                 list.addAll(inputOptionList)
 
-                for (inputOption in inputOptionList) {
-                    val chip = layoutInflater.inflate(
-                        R.layout.item_chip_input,
-                        chipGroupOption,
-                        false
-                    ) as Chip
-                    chip.apply {
-                        text = inputOption
-                        setOnCloseIconClickListener {
-                            chipGroupOption.removeView(it)
-                            list.remove(inputOption)
-                        }
-                    }
+                for (inputOption in list) {
+                    val chip = createChip(inputOption)
                     chipGroupOption.addView(chip)
                 }
             }
@@ -306,31 +333,13 @@ class ProductAddFragment : Fragment() {
                         val uri = it.data?.data!!
                         var bitmap: Bitmap? = null
 
-                        // 이미지 카드뷰 추가
-                        val previewLinearLayout = layoutInflater.inflate(
-                            R.layout.item_imageview_delete,
-                            fragmentProductAddBinding.linearMainImage,
-                            false
-                        ) as LinearLayout
-                        val previewImageView =
-                            previewLinearLayout.findViewById<ImageView>(R.id.imageViewDelete)
-                        val previewButton =
-                            previewLinearLayout.findViewById<Button>(R.id.buttonDelete)
-                        previewButton.setOnClickListener {
-                            // 이미지 카드뷰 삭제, 리스트에서 제거
-                            fragmentProductAddBinding.linearMainImage.removeView(
-                                previewLinearLayout
-                            )
-                            mainImage = null
-                            fragmentProductAddBinding.buttonAddMainImage.text = "0/1"
-                        }
-                        fragmentProductAddBinding.linearMainImage.addView(previewLinearLayout)
+                        val previewMainImageView = makeMainImageCardView()
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                             val source =
                                 ImageDecoder.createSource(mainActivity.contentResolver, uri)
                             bitmap = ImageDecoder.decodeBitmap(source)
-                            previewImageView.setImageBitmap(bitmap)
+                            previewMainImageView.setImageBitmap(bitmap)
                         } else {
                             val cursor =
                                 mainActivity.contentResolver.query(uri, null, null, null, null)
@@ -341,7 +350,7 @@ class ProductAddFragment : Fragment() {
                                 val source = cursor.getString(colIdx)
 
                                 bitmap = BitmapFactory.decodeFile(source)
-                                previewImageView.setImageBitmap(bitmap)
+                                previewMainImageView.setImageBitmap(bitmap)
                             }
                         }
 
@@ -352,6 +361,29 @@ class ProductAddFragment : Fragment() {
                 }
             }
         return galleryLauncher
+    }
+
+    private fun makeMainImageCardView(): ImageView {
+        // 이미지 카드뷰 추가
+        val previewLinearLayout = layoutInflater.inflate(
+            R.layout.item_imageview_delete,
+            fragmentProductAddBinding.linearMainImage,
+            false
+        ) as LinearLayout
+        val previewImageView =
+            previewLinearLayout.findViewById<ImageView>(R.id.imageViewDelete)
+        val previewButton =
+            previewLinearLayout.findViewById<Button>(R.id.buttonDelete)
+        previewButton.setOnClickListener {
+            // 이미지 카드뷰 삭제, 리스트에서 제거
+            fragmentProductAddBinding.linearMainImage.removeView(
+                previewLinearLayout
+            )
+            mainImage = null
+            fragmentProductAddBinding.buttonAddMainImage.text = "0/1"
+        }
+        fragmentProductAddBinding.linearMainImage.addView(previewLinearLayout)
+        return previewImageView
     }
 
     // 설명 이미지 갤러리 설정
@@ -365,26 +397,7 @@ class ProductAddFragment : Fragment() {
                         val uri = it.data?.data!!
                         // RecyclerView 표시용 저장
                         var bitmap: Bitmap? = null
-
-                        // 이미지 카드뷰 추가
-                        val previewLinearLayout = layoutInflater.inflate(
-                            R.layout.item_imageview_delete,
-                            fragmentProductAddBinding.linearDescriptionImage,
-                            false
-                        ) as LinearLayout
-                        val previewImageView =
-                            previewLinearLayout.findViewById<ImageView>(R.id.imageViewDelete)
-                        val previewButton =
-                            previewLinearLayout.findViewById<Button>(R.id.buttonDelete)
-                        previewButton.setOnClickListener {
-                            // 이미지 카드뷰 삭제, 리스트에서 제거
-                            fragmentProductAddBinding.linearDescriptionImage.removeView(
-                                previewLinearLayout
-                            )
-                            descriptionImage = null
-                            fragmentProductAddBinding.buttonAddDescImage.text = "0/1"
-                        }
-                        fragmentProductAddBinding.linearDescriptionImage.addView(previewLinearLayout)
+                        val previewImageView = makeDetailImageCardView()
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                             val source =
@@ -413,5 +426,28 @@ class ProductAddFragment : Fragment() {
             }
 
         return galleryLauncher
+    }
+
+    private fun makeDetailImageCardView(): ImageView {
+        // 이미지 카드뷰 추가
+        val previewLinearLayout = layoutInflater.inflate(
+            R.layout.item_imageview_delete,
+            fragmentProductAddBinding.linearDescriptionImage,
+            false
+        ) as LinearLayout
+        val previewImageView =
+            previewLinearLayout.findViewById<ImageView>(R.id.imageViewDelete)
+        val previewButton =
+            previewLinearLayout.findViewById<Button>(R.id.buttonDelete)
+        previewButton.setOnClickListener {
+            // 이미지 카드뷰 삭제, 리스트에서 제거
+            fragmentProductAddBinding.linearDescriptionImage.removeView(
+                previewLinearLayout
+            )
+            descriptionImage = null
+            fragmentProductAddBinding.buttonAddDescImage.text = "0/1"
+        }
+        fragmentProductAddBinding.linearDescriptionImage.addView(previewLinearLayout)
+        return previewImageView
     }
 }

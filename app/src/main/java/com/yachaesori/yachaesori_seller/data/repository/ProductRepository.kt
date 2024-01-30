@@ -71,4 +71,11 @@ class ProductRepository {
     fun downloadImage(storagePath: String, callback: (Task<Uri>) -> Unit) {
         storage.reference.child(storagePath).downloadUrl.addOnCompleteListener(callback)
     }
+
+    fun updateProduct(product: Product) {
+        product.productId.let {
+            productsRef.child(it).setValue(product)
+        }
+
+    }
 }

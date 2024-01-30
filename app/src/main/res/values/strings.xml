@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">YachaeSori_Seller</string>
+    <string name="app_name">야채소리 판매자</string>
     <!-- Strings related to login -->
     <string name="copyright_and_version">&#169; 2023 멋사. 개발 팀: 3팀 | v1.0.0</string>
     <string name="prompt_email">이메일</string>

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -20,7 +20,7 @@ import java.text.NumberFormat
 import java.util.Locale
 
 class ProductListFragment : Fragment() {
-    private lateinit var productViewModel: ProductViewModel
+    private val productViewModel: ProductViewModel by activityViewModels { ProductViewModelFactory() }
     private var _fragmentProductListBinding: FragmentProductListBinding? = null
 
     private val fragmentProductListBinding get() = _fragmentProductListBinding!!
@@ -33,8 +33,6 @@ class ProductListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _fragmentProductListBinding = FragmentProductListBinding.inflate(inflater)
-        productViewModel =
-            ViewModelProvider(this, ProductViewModelFactory())[ProductViewModel::class.java]
 
         productViewModel.getAllProduct()
 
@@ -186,12 +184,8 @@ class ProductListFragment : Fragment() {
             init {
                 // 상품 상세 화면으로 이동
                 rowProductBinding.root.setOnClickListener {
-                    val productId = filteredProductList[adapterPosition].productId!!
-                    val action =
-                        ProductListFragmentDirections.actionItemProductListToItemProductDetail(
-                            productId
-                        )
-                    findNavController().navigate(action)
+                    productViewModel.setSelectedProduct(filteredProductList[adapterPosition])
+                    findNavController().navigate(R.id.action_item_product_list_to_item_product_detail)
                 }
             }
         }
