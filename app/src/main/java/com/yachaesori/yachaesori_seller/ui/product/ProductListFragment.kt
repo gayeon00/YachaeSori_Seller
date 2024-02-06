@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.data.model.Product
@@ -211,10 +212,15 @@ class ProductListFragment : Fragment() {
             // holder.productUid = product.productUid.toString()
 
             // 서버로 부터 이미지를 내려받아 ImageView에 표시
-            productViewModel.loadAndDisplayImage(
-                product.mainImageUrl,
-                holder.imageViewProduct
-            )
+            productViewModel.loadImage(product.mainImageUrl) {
+                Glide.with(holder.imageViewProduct.context)
+                    .load(it)
+                    .placeholder(R.drawable.loading_placeholder)
+                    .fitCenter()
+                    .into(holder.imageViewProduct)
+
+            }
+
 
             holder.textViewName.text = product.name
 //            // 카테고리, 태그 분리 후 구분자 넣어서 결합

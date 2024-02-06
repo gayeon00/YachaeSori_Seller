@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.tabs.TabLayout
@@ -133,10 +134,14 @@ class ProductDetailFragment : Fragment() {
         val imageStoragePath = product.mainImageUrl
         Log.d("ProductDetailFragment", product.toString())
         if (imageStoragePath.isNotEmpty()) {
-            productViewModel.loadAndDisplayImage(
-                imageStoragePath,
+            productViewModel.loadImage(imageStoragePath) {
                 fragmentProductDetailBinding.imageViewMainImage
-            )
+                Glide.with(fragmentProductDetailBinding.imageViewMainImage.context)
+                    .load(it)
+                    .placeholder(R.drawable.loading_placeholder)
+                    .fitCenter()
+                    .into(fragmentProductDetailBinding.imageViewMainImage)
+            }
         }
     }
 }

@@ -23,6 +23,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -51,7 +52,7 @@ class ProductAddFragment : Fragment() {
     private lateinit var descriptionGalleryLauncher: ActivityResultLauncher<Intent>
 
     // 화면에 추가된 옵션 목록
-    private val addOptionList = mutableListOf<String>()
+    private var addOptionList = mutableListOf<String>()
 
 
     override fun onCreateView(
@@ -75,13 +76,22 @@ class ProductAddFragment : Fragment() {
             productViewModel.selectedProduct.observe(viewLifecycleOwner) { product ->
 
                 fragmentProductAddBinding.run {
-                    mainImage = Image()
+                    productViewModel.loadImage(product.mainImageUrl) {
+                        mainImage = Image(it.toString(),product.mainImageUrl)
+                        Log.d("what mainImage", mainImage.toString())
+                    }
+
                     showMainImage(product)
 
                     textInputEditTextProductName.setText(product.name)
-                    //TODO: 수정도 되도록 해야함
-                    addOption(product.options.toMutableList())
+                    addOptionList = product.options.toMutableList()
+                    showOption(addOptionList)
                     textInputEditTextPrice.setText(product.price.toString())
+
+                    productViewModel.loadImage(product.detailImageUrl) {
+                        descriptionImage = Image(it.toString(),product.detailImageUrl)
+                        Log.d("what descImage", descriptionImage.toString())
+                    }
 
                     showDetailImage(product)
 
@@ -120,10 +130,12 @@ class ProductAddFragment : Fragment() {
 
             // 해시태그 Chip 추가
             textInputEditTextOptions.setOnEditorActionListener { _, _, _ ->
+                chipGroupOption.removeAllViews()
                 addOption(addOptionList)
                 true
             }
             buttonAddOption.setOnClickListener {
+                chipGroupOption.removeAllViews()
                 addOption(addOptionList)
             }
 
@@ -188,13 +200,11 @@ class ProductAddFragment : Fragment() {
                 // 상품 등록 진행중 표시
                 progressBar.visibility = View.VISIBLE
 
-
                 // 상품 식별, 파일명에 사용할 고유 코드
                 val code = System.currentTimeMillis().toString()
 
-                // DB에 저장할 이미지들 파일명 설정
-                mainImage!!.fileName = "image/${code}_main_image.jpg"
-                descriptionImage!!.fileName = "image/${code}_description_image.jpg"
+                if(mainImage!!.fileName!!.isEmpty()) mainImage!!.fileName = "image/${code}_main_image.jpg"
+                if(descriptionImage!!.fileName!!.isEmpty()) descriptionImage!!.fileName = "image/${code}_description_image.jpg"
 
                 val product = Product(
                     "",
@@ -212,18 +222,9 @@ class ProductAddFragment : Fragment() {
                 imageArrayList.add(mainImage!!)
                 imageArrayList.add(descriptionImage!!)
 
+                Log.d("what imageList", imageArrayList.toString())
                 saveOrUpdateData(product, imageArrayList)
-            }
-        }
-    }
 
-    private fun updateChipGroup(options: List<String>) {
-        fragmentProductAddBinding.run {
-            chipGroupOption.removeAllViews()
-
-            for(option in options){
-                val chip = createChip(option)
-                chipGroupOption.addView(chip)
             }
         }
     }
@@ -239,6 +240,7 @@ class ProductAddFragment : Fragment() {
         chip.setOnCloseIconClickListener {
             // Chip 삭제
             fragmentProductAddBinding.chipGroupOption.removeView(chip)
+            addOptionList.remove(option)
         }
         return chip
     }
@@ -251,11 +253,16 @@ class ProductAddFragment : Fragment() {
         val dImageStoragePath = product.detailImageUrl
         Log.d("ProductDetailFragment", product.toString())
         if (dImageStoragePath.isNotEmpty()) {
-            productViewModel.loadAndDisplayImage(
-                dImageStoragePath,
-                dPreviewImageView
-            )
+            productViewModel.loadImage(dImageStoragePath) {
+                Glide.with(dPreviewImageView.context)
+                    .load(it)
+                    .placeholder(R.drawable.loading_placeholder)
+                    .fitCenter()
+                    .into(dPreviewImageView)
+            }
+
         }
+        fragmentProductAddBinding.buttonAddDescImage.text = "1/1"
     }
 
     private fun showMainImage(product: Product) {
@@ -265,11 +272,15 @@ class ProductAddFragment : Fragment() {
         val mImageStoragePath = product.mainImageUrl
         Log.d("ProductDetailFragment", product.toString())
         if (mImageStoragePath.isNotEmpty()) {
-            productViewModel.loadAndDisplayImage(
-                mImageStoragePath,
-                mPreviewImageView
-            )
+            productViewModel.loadImage(mImageStoragePath) {
+                Glide.with(mPreviewImageView.context)
+                    .load(it)
+                    .placeholder(R.drawable.loading_placeholder)
+                    .fitCenter()
+                    .into(mPreviewImageView)
+            }
         }
+        fragmentProductAddBinding.buttonAddMainImage.text = "1/1"
     }
 
     private fun saveOrUpdateData(product: Product, imageArrayList: ArrayList<Image>) {
@@ -282,23 +293,30 @@ class ProductAddFragment : Fragment() {
         findNavController().popBackStack(R.id.item_home, false)
     }
 
+    private fun showOption(list: MutableList<String>) {
+        fragmentProductAddBinding.run {
+            for (inputOption in list) {
+                if(inputOption.isNotEmpty()) {
+                    val chip = createChip(inputOption)
+                    chipGroupOption.addView(chip)
+                }
+            }
+        }
+    }
     private fun addOption(list: MutableList<String>) {
         fragmentProductAddBinding.run {
             // 옵션는 최대 10개까지 등록 가능
             if (list.size < 10) {
-                // 입력 문자열 옵션로 분리, 중복 옵션 & 이미 chip 생성된 옵션 제외
-                val inputOptionList = textInputEditTextOptions.text.toString()
-                    .split(",")
-                    .map(String::trim)
-                    .distinct()
-                    .filter { !list.contains(it) }
-
-                // 추가된 옵션 저장
-                list.addAll(inputOptionList)
+                // 중복 아니게 추가된 옵션 저장
+                if(!list.contains(textInputEditTextOptions.text.toString())) {
+                    list.add(textInputEditTextOptions.text.toString())
+                }
 
                 for (inputOption in list) {
-                    val chip = createChip(inputOption)
-                    chipGroupOption.addView(chip)
+                    if(inputOption.isNotEmpty()) {
+                        val chip = createChip(inputOption)
+                        chipGroupOption.addView(chip)
+                    }
                 }
             }
             textInputEditTextOptions.setText("")
@@ -356,6 +374,7 @@ class ProductAddFragment : Fragment() {
 
                         // 이미지 정보 저장 해두기
                         mainImage = Image(uri.toString(), "")
+                        Log.d("what mainImage", mainImage.toString())
                         fragmentProductAddBinding.buttonAddMainImage.text = "1/1"
                     }
                 }
@@ -380,6 +399,7 @@ class ProductAddFragment : Fragment() {
                 previewLinearLayout
             )
             mainImage = null
+            Log.d("what mainImage", mainImage.toString())
             fragmentProductAddBinding.buttonAddMainImage.text = "0/1"
         }
         fragmentProductAddBinding.linearMainImage.addView(previewLinearLayout)
@@ -420,6 +440,7 @@ class ProductAddFragment : Fragment() {
 
                         // 이미지 정보 저장 해두기
                         descriptionImage = Image(uri.toString(), "")
+                        Log.d("what descImage", descriptionImage.toString())
                         fragmentProductAddBinding.buttonAddDescImage.text = "1/1"
                     }
                 }
@@ -445,6 +466,7 @@ class ProductAddFragment : Fragment() {
                 previewLinearLayout
             )
             descriptionImage = null
+            Log.d("what descImage", descriptionImage.toString())
             fragmentProductAddBinding.buttonAddDescImage.text = "0/1"
         }
         fragmentProductAddBinding.linearDescriptionImage.addView(previewLinearLayout)

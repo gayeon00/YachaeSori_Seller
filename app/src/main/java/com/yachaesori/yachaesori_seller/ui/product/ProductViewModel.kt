@@ -13,6 +13,7 @@ import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.data.model.Image
 import com.yachaesori.yachaesori_seller.data.model.Product
 import com.yachaesori.yachaesori_seller.data.repository.ProductRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ProductViewModel(private val productRepository: ProductRepository) : ViewModel() {
@@ -30,6 +31,7 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
         _productList.value = mutableListOf<Product>()
         _productCount.value = 0L
         selectedProduct.value = Product("", "", 0L, "", "", "")
+        isEditMode.value = false
     }
 
     fun setSelectedProduct(product: Product) {
@@ -54,14 +56,15 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
     // 로그인 판매자가 등록한 상품 건 수 가져오기 (빠른 카운팅용)
     fun getProductCount() {
         productRepository.getAllProduct {
+            Log.d("what allProduct", it.result.value.toString())
             _productCount.value = it.result.childrenCount
         }
     }
 
     fun saveOrUpdateProduct(product: Product) {
-        if (selectedProduct.value != Product()) {
+        if (isEditMode.value!!) {
             viewModelScope.launch {
-                productRepository.updateProduct(product)
+                productRepository.updateProduct(selectedProduct.value!!, product)
             }
 
         } else {
@@ -87,19 +90,12 @@ class ProductViewModel(private val productRepository: ProductRepository) : ViewM
     }
 
     // Storage 이미지 ImageView에 매칭 (Glide 라이브러리)
-    fun loadAndDisplayImage(storagePath: String, imageView: ImageView) {
-        productRepository.downloadImage(storagePath) { task ->
-            if (task.isSuccessful) {
-                val imageUrl = task.result
-                Glide.with(imageView.context)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.loading_placeholder)
-                    .fitCenter()
-                    .into(imageView)
-            } else {
-                Log.e("ProductViewModel", storagePath)
-                Toast.makeText(imageView.context, "서버로 부터 이미지를 가져오지 못했습니다", Toast.LENGTH_SHORT)
-                    .show()
+    fun loadImage(storagePath: String, onImageLoaded: (Uri) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val uri = productRepository.downloadImage(storagePath)
+
+            launch(Dispatchers.Main) {
+                onImageLoaded(uri)
             }
         }
     }

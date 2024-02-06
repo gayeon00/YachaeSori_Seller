@@ -1,11 +1,13 @@
 package com.yachaesori.yachaesori_seller.ui.product.tab
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
+import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.data.model.Product
 import com.yachaesori.yachaesori_seller.databinding.FragmentProductDetailTabBinding
 import com.yachaesori.yachaesori_seller.ui.product.ProductViewModel
@@ -22,7 +24,8 @@ class ProductDetailTabFragment(val product: Product) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _fragmentProductDetailTabBinding = FragmentProductDetailTabBinding.inflate(inflater)
-        productViewModel = ViewModelProvider(this, ProductViewModelFactory())[ProductViewModel::class.java]
+        productViewModel =
+            ViewModelProvider(this, ProductViewModelFactory())[ProductViewModel::class.java]
 
         return fragmentProductDetailTabBinding.root
     }
@@ -31,7 +34,13 @@ class ProductDetailTabFragment(val product: Product) : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         fragmentProductDetailTabBinding.run {
-            productViewModel.loadAndDisplayImage(product.detailImageUrl!!, imageViewProductDescription)
+            productViewModel.loadImage(product.detailImageUrl!!) {
+                Glide.with(imageViewProductDescription.context)
+                    .load(it)
+                    .placeholder(R.drawable.loading_placeholder)
+                    .fitCenter()
+                    .into(imageViewProductDescription)
+            }
         }
     }
 

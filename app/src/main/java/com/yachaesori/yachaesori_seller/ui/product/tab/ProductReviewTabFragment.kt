@@ -1,22 +1,23 @@
 package com.yachaesori.yachaesori_seller.ui.product.tab
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.data.model.Product
+import com.yachaesori.yachaesori_seller.data.model.Review
 import com.yachaesori.yachaesori_seller.databinding.FragmentProductReviewTabBinding
+import com.yachaesori.yachaesori_seller.databinding.FragmentProductReviewTabItemBinding
 import com.yachaesori.yachaesori_seller.ui.product.ProductViewModel
 import com.yachaesori.yachaesori_seller.ui.product.ProductViewModelFactory
-import com.yachaesori.yachaesori_seller.data.model.Review
-import com.yachaesori.yachaesori_seller.databinding.FragmentProductReviewTabItemBinding
 
 class ProductReviewTabFragment(product: Product) : Fragment() {
     private lateinit var productViewModel: ProductViewModel
@@ -46,7 +47,7 @@ class ProductReviewTabFragment(product: Product) : Fragment() {
         // 클릭한 Chip 버튼에 따라 BottomSheetDialog 표시
         fragmentProductReviewTabBinding.run {
             // 평점 분포 변경 터치 막기 (단순 표시용)
-            seekBarVeryGood.setOnTouchListener { _, _ ->  true }
+            seekBarVeryGood.setOnTouchListener { _, _ -> true }
             seekBarLike.setOnTouchListener { _, _ -> true }
             seekBarSoso.setOnTouchListener { _, _ -> true }
             seekBarJustOk.setOnTouchListener { _, _ -> true }
@@ -133,7 +134,13 @@ class ProductReviewTabFragment(product: Product) : Fragment() {
                 binding.textViewReviewNickname.text = review.customerUid
                 binding.textViewReviewDate.text = review.date
                 binding.ratingBarReview.rating = review.rating.toFloat()
-                productViewModel.loadAndDisplayImage(review.Image!!, binding.imageViewReview)
+                productViewModel.loadImage(review.Image!!) {
+                    Glide.with(binding.imageViewReview.context)
+                        .load(it)
+                        .placeholder(R.drawable.loading_placeholder)
+                        .fitCenter()
+                        .into(binding.imageViewReview)
+                }
                 binding.textViewReviewInfo.text = "${review.height}cm · ${review.weight}kg"
                 binding.textViewReviewOption.text = "${review.color} [${review.size}]"
                 binding.textViewReviewContent.text = review.content

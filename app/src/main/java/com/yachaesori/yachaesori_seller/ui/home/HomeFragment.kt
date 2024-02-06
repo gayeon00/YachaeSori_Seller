@@ -84,6 +84,7 @@ class HomeFragment : Fragment() {
 
         fragmentHomeBinding.run {
             buttonRegProduct.setOnClickListener {
+                productViewModel.isEditMode.value = false
                 // 상품 등록 화면으로 이동
                 it.findNavController().navigate(R.id.action_item_home_to_item_product_add)
             }

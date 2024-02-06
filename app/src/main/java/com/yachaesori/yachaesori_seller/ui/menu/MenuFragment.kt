@@ -6,11 +6,16 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.databinding.FragmentMenuBinding
+import com.yachaesori.yachaesori_seller.ui.product.ProductViewModel
+import com.yachaesori.yachaesori_seller.ui.product.ProductViewModelFactory
 
 class MenuFragment : Fragment() {
+    private val productViewModel: ProductViewModel by activityViewModels { ProductViewModelFactory() }
     private var _fragmentMenuBinding: FragmentMenuBinding? = null
 
     // This property is only valid between onCreateView and
@@ -74,6 +79,7 @@ class MenuFragment : Fragment() {
             }
 
             buttonGoToAddProduct.setOnClickListener {
+                productViewModel.isEditMode.value = false
                 //상품 등록 페이지로 이동
                 findNavController().navigate(R.id.action_item_menu_to_item_product_add)
             }
