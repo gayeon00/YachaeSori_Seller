@@ -80,34 +80,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/linearLayoutCS"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <Button
-                    android:id="@+id/buttonGoToManageNotice"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="start|center_vertical"
-                    android:text="@string/manage_notice_title"
-                    android:paddingStart="16dp"/>
-
-                <Button
-                    android:id="@+id/buttonGoToManageInq"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="start|center_vertical"
-                    android:text="@string/manage_inquiry_title"
-                    android:paddingStart="16dp"/>
-
-
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/linearLayoutSetting"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -115,13 +87,22 @@
                 android:visibility="gone">
 
                 <Button
-                    android:id="@+id/buttonGoToSetting"
+                    android:id="@+id/buttonGoToIntroImageSetting"
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start|center_vertical"
-                    android:text="@string/setting_title"
-                    android:paddingStart="16dp"/>
+                    android:paddingStart="16dp"
+                    android:text="@string/upload_intro_image_title" />
+
+                <Button
+                    android:id="@+id/buttonGoToPrepImageSetting"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="16dp"
+                    android:text="@string/upload_prep_image_titme" />
 
             </LinearLayout>
         </LinearLayout>
