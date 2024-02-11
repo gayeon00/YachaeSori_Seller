@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -21,6 +22,8 @@ import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.databinding.FragmentMenuBinding
 import com.yachaesori.yachaesori_seller.ui.product.ProductViewModel
 import com.yachaesori.yachaesori_seller.ui.product.ProductViewModelFactory
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class MenuFragment : Fragment() {
     private val productViewModel: ProductViewModel by activityViewModels { ProductViewModelFactory() }
@@ -129,39 +132,23 @@ class MenuFragment : Fragment() {
         galleryLauncher.launch(galleryIntent)
     }
 
-    private fun uploadImage(uri: Uri, path: String) {
+    private fun uploadImage(imageUri: Uri, path: String) {
         val imageRef =
             FirebaseStorage.getInstance().reference.child("image/yachae_${path}.jpg")
 
-        //firebase storage에 이미지 업로드
-        imageRef.putFile(uri)
-            .addOnSuccessListener {
-                Log.d("menu", "storage upload 성공")
-                // 이미지 업로드 성공 시 이미지의 키 그대로 실시간 데이터베이스에 저장
-                saveImagePathToDatabase("image/yachae_${path}.jpg", "${path}ImageUrl")
-            }
-            .addOnFailureListener {
-
-            }
-
-    }
-
-    private fun saveImagePathToDatabase(storagePath: String, childPath: String) {
-        val imageDatabaseReference =
-            FirebaseDatabase.getInstance().reference.child("yachae").child(childPath)
-
-        // 이미지 경로를 데이터베이스에 저장
-        imageDatabaseReference.setValue(storagePath)
-            .addOnSuccessListener {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                //firebase storage에 이미지 업로드
+                imageRef.putFile(imageUri).await()
+                Log.d("deleteImageAndUploadStorage", "storage upload 성공")
                 // 이미지 경로 저장 성공에 대한 처리
                 (activity as MainActivity).showSnackBar("성공적으로 변경됐습니다.")
-            }
-            .addOnFailureListener { exception ->
-                // 이미지 경로 저장 실패에 대한 처리
-                (activity as MainActivity).showSnackBar("변경에 실패했습니다. 다시 시도해주세요.")
-                Log.d("saveImagePathToDatabase", exception.toString())
-            }
-    }
 
+            } catch (e: Exception) {
+                Log.d("deleteImageAndUploadStorage", "업로드 및 데이터베이스 업데이트 실패: $e")
+                throw e
+            }
+        }
+    }
 
 }
