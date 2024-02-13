@@ -102,7 +102,16 @@
                     android:layout_height="wrap_content"
                     android:gravity="start|center_vertical"
                     android:paddingStart="16dp"
-                    android:text="@string/upload_prep_image_titme" />
+                    android:text="@string/upload_prep_image_title" />
+
+                <Button
+                    android:id="@+id/buttonGoToBannerSetting"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="16dp"
+                    android:text="@string/manage_banner_title" />
 
             </LinearLayout>
         </LinearLayout>

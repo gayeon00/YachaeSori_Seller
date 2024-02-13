@@ -40,11 +40,6 @@
         tools:layout="@layout/fragment_guide" />
 
     <fragment
-        android:id="@+id/item_mypage"
-        android:name="com.yachaesori.yachaesori_seller.ui.mypage.MypageFragment"
-        android:label="fragment_mypage"
-        tools:layout="@layout/fragment_mypage" />
-    <fragment
         android:id="@+id/item_menu"
         android:name="com.yachaesori.yachaesori_seller.ui.menu.MenuFragment"
         android:label="fragment_menu"
@@ -70,6 +65,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_item_menu_to_item_banner_manage"
+            app:destination="@id/item_banner_manage"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
     <fragment
@@ -117,5 +119,10 @@
             android:id="@+id/action_item_product_detail_to_item_product_add"
             app:destination="@id/item_product_add" />
     </fragment>
+    <fragment
+        android:id="@+id/item_banner_manage"
+        android:name="com.yachaesori.yachaesori_seller.ui.setting.BannerManageFragment"
+        android:label="fragment_banner_manage"
+        tools:layout="@layout/fragment_banner_manage" />
 
 </navigation>

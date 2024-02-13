@@ -119,6 +119,11 @@ class MenuFragment : Fragment() {
                 selectedButton = R.id.buttonGoToPrepImageSetting
                 openGallery()
             }
+
+            buttonGoToBannerSetting.setOnClickListener {
+                //배너관리 페이지로 이동
+                findNavController().navigate(R.id.action_item_menu_to_item_banner_manage)
+            }
         }
     }
 
