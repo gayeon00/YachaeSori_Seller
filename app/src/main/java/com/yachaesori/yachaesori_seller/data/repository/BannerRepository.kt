@@ -14,9 +14,11 @@ import kotlinx.coroutines.tasks.await
 
 class BannerRepository {
 
+    val code = System.currentTimeMillis()
+
     private val databaseRef = FirebaseDatabase.getInstance().reference.child("banners")
     private val storageRef =
-        FirebaseStorage.getInstance().reference.child("image/banner_${System.currentTimeMillis()}.jpg")
+        FirebaseStorage.getInstance().reference.child("image/banner_${code}.jpg")
 
 
     suspend fun getBanners(): List<Banner> {
@@ -24,7 +26,7 @@ class BannerRepository {
             .await().children.mapNotNull { it.getValue(Banner::class.java) }
     }
 
-    fun addBanner(banner: Banner, callback: () -> () -> Unit) {
+    fun addBanner(banner: Banner, callback: () -> Unit) {
         val bannerId = databaseRef.push().key
         bannerId?.let { id ->
             banner.id = id
@@ -46,11 +48,8 @@ class BannerRepository {
         }
     }
 
-    suspend fun uploadBannerImage(uri: Uri): String {
+    suspend fun uploadBannerImage(uri: Uri){
         storageRef.putFile(uri).await() // 업로드 완료 대기
-
-        // 업로드된 이미지의 download URL 가져오기
-        return getImageDownloadUrl(storageRef)
     }
 
     private suspend fun getImageDownloadUrl(storageRef: StorageReference): String {
@@ -82,10 +81,10 @@ class BannerRepository {
     /**
      * imageUrl로 Banner 객체 만들어 db에 저장
      */
-    fun saveBanner(imageUrl: String) {
+    fun addBanner() {
         val bannerId = databaseRef.push().key!!
         getBannerCount {
-            val banner = Banner(bannerId, imageUrl, (it+1).toInt())
+            val banner = Banner(bannerId, "image/banner_${code}.jpg", (it+1).toInt())
             databaseRef.child(bannerId).setValue(banner)
         }
     }

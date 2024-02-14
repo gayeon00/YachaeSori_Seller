@@ -6,27 +6,34 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.yachaesori.yachaesori_seller.data.model.Banner
 import com.yachaesori.yachaesori_seller.data.repository.BannerRepository
-import com.yachaesori.yachaesori_seller.data.repository.ProductRepository
-import com.yachaesori.yachaesori_seller.ui.product.ProductViewModel
 import kotlinx.coroutines.launch
 
 class BannerViewModel(
     private val repository: BannerRepository
 ) : ViewModel() {
 
-    private val _downloadUrl = MutableLiveData<String>()
-    val downloadUrl: LiveData<String> = _downloadUrl
+    private val _bannerList = MutableLiveData<List<Banner>>()
+    val bannerList: LiveData<List<Banner>> = _bannerList
 
-    private val _saveResult = MutableLiveData<Boolean>()
-    val saveResult: LiveData<Boolean> = _saveResult
-
+    init {
+        getBanners()
+    }
     fun uploadBanner(uri: Uri) {
         viewModelScope.launch {
-            val imageUrl = repository.uploadBannerImage(uri)
-            repository.saveBanner(imageUrl)
+            repository.uploadBannerImage(uri)
+            repository.addBanner()
         }
     }
+
+    private fun getBanners() {
+        viewModelScope.launch {
+            _bannerList.value = repository.getBanners()
+        }
+    }
+
+
 }
 
 class BannerViewModelFactory : ViewModelProvider.Factory {
