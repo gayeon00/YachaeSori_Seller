@@ -1,18 +1,22 @@
 package com.yachaesori.yachaesori_seller.ui.setting
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.yachaesori.yachaesori_seller.R
 import com.yachaesori.yachaesori_seller.databinding.FragmentBannerManageBinding
 
 class BannerManageFragment : Fragment() {
     private lateinit var binding: FragmentBannerManageBinding
+    private val bannerViewModel: BannerViewModel by viewModels { BannerViewModelFactory() }
 
     private val galleryLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -20,10 +24,18 @@ class BannerManageFragment : Fragment() {
                 val uri = result.data?.data
 
                 uri?.let {
-                    //배너 업로드 하기
+                    uploadBanner(uri)
                 }
             }
         }
+
+    /**
+     * uri로 storage에 업로드 하고, 그 downloadUrl로 Banner 객체 만들어서 realtime에 넣기
+     */
+    private fun uploadBanner(uri: Uri) {
+        bannerViewModel.uploadBanner(uri)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,7 +60,13 @@ class BannerManageFragment : Fragment() {
      */
     private fun setAddBanner() {
         binding.toolbarManageBanner.setOnMenuItemClickListener {
+            val galleryIntent =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                    type = "image/*"
+                    putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
+                }
 
+            galleryLauncher.launch(galleryIntent)
             true
         }
     }
