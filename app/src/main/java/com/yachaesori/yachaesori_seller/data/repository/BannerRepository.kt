@@ -42,10 +42,33 @@ class BannerRepository {
         }
     }
 
-    fun deleteBanner(banner: Banner, callback: (Task<Void>) -> Unit) {
-        databaseRef.child(banner.id).removeValue().addOnCompleteListener {
-            callback(it)
-        }
+    fun deleteBanner(banner: Banner) {
+        databaseRef.child(banner.id).removeValue()
+        //순서 재조정
+        updateBannerOrderAfterDeletion(banner.order)
+
+    }
+
+    // 삭제된 Banner 이후의 모든 Banner를 가져와 순서를 갱신
+    private fun updateBannerOrderAfterDeletion(deletedOrder: Int) {
+        databaseRef.orderByChild("order").startAt(deletedOrder.toDouble()).addListenerForSingleValueEvent(
+            object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (childSnapshot in dataSnapshot.children) {
+                        val banner = childSnapshot.getValue(Banner::class.java)
+                        banner?.let {
+                            // 현재 순서를 1 감소시킴
+                            it.order = it.order - 1
+                            // 변경된 Banner를 다시 저장
+                            databaseRef.child(childSnapshot.key!!).setValue(it)
+                        }
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.e("YourRepository", "Error: ${databaseError.message}")
+                }
+            })
     }
 
     suspend fun uploadBannerImage(uri: Uri){

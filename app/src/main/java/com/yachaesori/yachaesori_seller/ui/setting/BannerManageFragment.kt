@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -29,8 +30,13 @@ import com.yachaesori.yachaesori_seller.util.setImageFromUrl
 class BannerManageFragment : Fragment() {
     private lateinit var binding: FragmentBannerManageBinding
     private val bannerViewModel: BannerViewModel by viewModels { BannerViewModelFactory() }
-    private val bannerListAdapter by lazy { BannerListAdapter() }
     private val bannerListEditAdapter by lazy { BannerListEditAdapter() }
+    private val bannerListAdapter by lazy { BannerListAdapter(
+        //popupmenu에서 삭제 버튼을 클릭하면 배너 삭제 하도록
+        onDeleteItemClick = {
+            bannerViewModel.deleteBanner(it)
+        }
+    ) }
     private val itemTouchHelper by lazy { ItemTouchHelper(ItemTouchCallback(bannerListEditAdapter)) }
 
     //편집모드인지 아닌지
@@ -168,7 +174,9 @@ class BannerManageFragment : Fragment() {
     }
 }
 
-class BannerListAdapter :
+class BannerListAdapter(
+    private val onDeleteItemClick: (Banner) -> Unit
+) :
     ListAdapter<Banner, BannerListAdapter.BannerViewHolder>(BannerDiffUtil()) {
     inner class BannerViewHolder(
         private val binding: RowBannerBinding
@@ -177,8 +185,30 @@ class BannerListAdapter :
             binding.run {
                 tvOrder.text = item.order.toString()
                 imageView.setImageFromUrl(item.imageUrl)
+                btnMore.setOnClickListener {
+                    showPopupMenu(it, getItem(adapterPosition))
+                }
             }
         }
+
+
+    }
+
+    private fun showPopupMenu(view: View, item: Banner) {
+        val popupMenu = PopupMenu(view.context, view)
+        popupMenu.menuInflater.inflate(R.menu.menu_banner_delete, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when(menuItem.itemId) {
+                R.id.item_delete -> {
+                    onDeleteItemClick.invoke(item)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popupMenu.show()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BannerViewHolder {

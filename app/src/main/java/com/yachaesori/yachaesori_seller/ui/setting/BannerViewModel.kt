@@ -24,6 +24,7 @@ class BannerViewModel(
 
     private val databaseRef = FirebaseDatabase.getInstance().reference.child("banners")
 
+    //realtimedatabase에서 데이터가 변경되면 observe해서 bannerlist에 반영
     private val valueEventListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             val banners = dataSnapshot.children.mapNotNull { it.getValue(Banner::class.java) }
@@ -62,6 +63,10 @@ class BannerViewModel(
         viewModelScope.launch {
             repository.updateBannerOrder(bannerList)
         }
+    }
+
+    fun deleteBanner(it: Banner) {
+        repository.deleteBanner(it)
     }
 
 
