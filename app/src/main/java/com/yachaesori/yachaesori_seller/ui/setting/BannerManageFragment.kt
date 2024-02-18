@@ -6,9 +6,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -31,8 +29,9 @@ import com.yachaesori.yachaesori_seller.util.setImageFromUrl
 class BannerManageFragment : Fragment() {
     private lateinit var binding: FragmentBannerManageBinding
     private val bannerViewModel: BannerViewModel by viewModels { BannerViewModelFactory() }
-    private val bannerListAdapter = BannerListAdapter()
-    private val bannerListEditAdapter = BannerListEditAdapter()
+    private val bannerListAdapter by lazy { BannerListAdapter() }
+    private val bannerListEditAdapter by lazy { BannerListEditAdapter() }
+    private val itemTouchHelper by lazy { ItemTouchHelper(ItemTouchCallback(bannerListEditAdapter)) }
 
     //편집모드인지 아닌지
     private var isEditMode = false
@@ -87,25 +86,41 @@ class BannerManageFragment : Fragment() {
      */
     private fun setEditButton() {
         binding.toolbarManageBanner.setOnMenuItemClickListener {
-            when(it.itemId) {
+            when (it.itemId) {
                 R.id.item_banner_edit -> {
                     isEditMode = true
 
-                    binding.toolbarManageBanner.menu.findItem(R.id.item_banner_edit).setVisible(false)
-                    binding.toolbarManageBanner.menu.findItem(R.id.item_banner_edit_complete).setVisible(true) //완료 아이콘이 보이도록
+                    binding.toolbarManageBanner.menu.findItem(R.id.item_banner_edit)
+                        .setVisible(false)
+                    binding.toolbarManageBanner.menu.findItem(R.id.item_banner_edit_complete)
+                        .setVisible(true) //완료 아이콘이 보이도록
                     binding.listBanners.adapter = bannerListEditAdapter // 배너 목록도 갱신
                 }
 
                 R.id.item_banner_edit_complete -> {
+                    //배너 순서 업데이트
+                    updateBannerOrder()
+
                     isEditMode = false
-                    binding.toolbarManageBanner.menu.findItem(R.id.item_banner_edit).setVisible(true)
-                    binding.toolbarManageBanner.menu.findItem(R.id.item_banner_edit_complete).setVisible(false) //편집 아이콘이 보이도록
+                    binding.toolbarManageBanner.menu.findItem(R.id.item_banner_edit)
+                        .setVisible(true)
+                    binding.toolbarManageBanner.menu.findItem(R.id.item_banner_edit_complete)
+                        .setVisible(false) //편집 아이콘이 보이도록
                     binding.listBanners.adapter = bannerListAdapter // 배너 목록도 갱신
+
+
                 }
             }
 
             true
         }
+    }
+
+    //바뀐 순서 db에 저장
+    private fun updateBannerOrder() {
+        Log.d("BannerManageFragment", binding.listBanners.adapter.toString())
+        val bannerList = (binding.listBanners.adapter as BannerListEditAdapter).currentList
+        bannerViewModel.updateBannerOrder(bannerList)
     }
 
     private fun setBannerList() {
@@ -119,6 +134,9 @@ class BannerManageFragment : Fragment() {
                 divider
             )
         }
+
+        // 리싸이클러뷰에 itemTouchHelper 연결
+        itemTouchHelper.attachToRecyclerView(binding.listBanners)
     }
 
     /**
@@ -179,7 +197,8 @@ class BannerListAdapter :
 }
 
 class BannerListEditAdapter :
-    ListAdapter<Banner, BannerListEditAdapter.BannerEditViewHolder>(BannerDiffUtil()) {
+    ListAdapter<Banner, BannerListEditAdapter.BannerEditViewHolder>(BannerDiffUtil()),
+    ItemTouchHelperListener {
     inner class BannerEditViewHolder(
         private val binding: RowBannerEditBinding
     ) : ViewHolder(binding.root) {
@@ -203,6 +222,15 @@ class BannerListEditAdapter :
 
     override fun onBindViewHolder(holder: BannerEditViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+
+    override fun onItemMove(from: Int, to: Int) {
+        val item = currentList[from]
+        val newList = ArrayList<Banner>()
+        newList.addAll(currentList)
+        newList.removeAt(from)
+        newList.add(to,item)
+        submitList(newList)
     }
 
 }

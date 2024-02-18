@@ -88,4 +88,36 @@ class BannerRepository {
             databaseRef.child(bannerId).setValue(banner)
         }
     }
+
+    fun updateBannerOrder(bannerList: List<Banner>) {
+        val databaseBanners = mutableMapOf<String, Banner>()
+
+        // 데이터베이스에서 가져온 banners를 Map으로 변환
+        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (snapshot in dataSnapshot.children) {
+                    val banner = snapshot.getValue(Banner::class.java)
+                    banner?.let { databaseBanners[snapshot.key!!] = it }
+                }
+
+                // bannerList와 데이터베이스의 order를 비교하고 업데이트
+                for (localBanner in bannerList) {
+                    val databaseBanner = databaseBanners[localBanner.id]
+                    if (databaseBanner != null && localBanner.order != databaseBanner.order) {
+                        // order가 다르면 업데이트
+                        updateOrder(localBanner.id, localBanner.order)
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // 오류 처리
+                 Log.e("FirebaseBanner", "Error: ${databaseError.message}")
+            }
+        })
+    }
+
+    private fun updateOrder(bannerId: String, newOrder: Int) {
+        databaseRef.child(bannerId).child("order").setValue(newOrder)
+    }
 }

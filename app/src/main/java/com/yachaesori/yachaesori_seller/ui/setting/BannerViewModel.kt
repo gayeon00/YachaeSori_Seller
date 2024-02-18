@@ -1,11 +1,16 @@
 package com.yachaesori.yachaesori_seller.ui.setting
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.yachaesori.yachaesori_seller.data.model.Banner
 import com.yachaesori.yachaesori_seller.data.repository.BannerRepository
 import kotlinx.coroutines.launch
@@ -17,9 +22,30 @@ class BannerViewModel(
     private val _bannerList = MutableLiveData<List<Banner>>()
     val bannerList: LiveData<List<Banner>> = _bannerList
 
-    init {
-        getBanners()
+    private val databaseRef = FirebaseDatabase.getInstance().reference.child("banners")
+
+    private val valueEventListener = object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            val banners = dataSnapshot.children.mapNotNull { it.getValue(Banner::class.java) }
+            _bannerList.value = banners
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+            // 오류 처리
+             Log.e("FirebaseBanner", "Error: ${databaseError.message}")
+        }
     }
+    init {
+        // 초기화 시에 데이터베이스에 ValueEventListener을 등록합니다.
+        databaseRef.orderByChild("order").addValueEventListener(valueEventListener)
+    }
+
+    // ViewModel이 소멸될 때 ValueEventListener을 제거합니다.
+    override fun onCleared() {
+        super.onCleared()
+        databaseRef.removeEventListener(valueEventListener)
+    }
+
     fun uploadBanner(uri: Uri) {
         viewModelScope.launch {
             repository.uploadBannerImage(uri)
@@ -27,9 +53,14 @@ class BannerViewModel(
         }
     }
 
-    private fun getBanners() {
+    fun updateBannerOrder(bannerList: List<Banner>) {
+        for (i in bannerList.indices) {
+            if(bannerList[i].order != i+1) {
+                bannerList[i].order = i+1
+            }
+        }
         viewModelScope.launch {
-            _bannerList.value = repository.getBanners()
+            repository.updateBannerOrder(bannerList)
         }
     }
 
